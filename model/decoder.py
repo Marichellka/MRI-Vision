@@ -19,7 +19,8 @@ class DeConvBlock(nn.Module):
     
 
 class Decoder(nn.Module):
-    def __init__(self, channels: int, blocks: int, in_size: tuple[int, int, int], z_dim: int):
+    def __init__(self, in_size: tuple[int, int, int], z_dim: int = 512, 
+                 channels: int = 16, blocks: int = 4):
         super(Decoder, self).__init__()
 
         self.out_conv = nn.Conv3d(channels, 1, 1),
