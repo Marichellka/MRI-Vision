@@ -15,6 +15,8 @@ class AutoEncoder:
         parameters = list(self.encoder.parameters()) + list(self.decoder.parameters())
         self.opimizer = optim.Adam(parameters, lr)
         self.device = device
+
+        self.loss = nn.MSELoss() 
     
     
 

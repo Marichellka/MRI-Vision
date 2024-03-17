@@ -7,7 +7,6 @@ from autoencoder import AutoEncoder
 
 def train(dataset, model: AutoEncoder, epochs : int):
     writer = SummaryWriter()
-    compute_loss = nn.MSELoss() # TODO: move to AutoEncoder
 
     step = 0
     for epoch in range(epochs):
@@ -22,7 +21,7 @@ def train(dataset, model: AutoEncoder, epochs : int):
             encoded = model.encoder(input)
             restored = model.decoder(encoded)
 
-            step_loss = compute_loss(restored, input)
+            step_loss = model.loss(restored, input)
             model.opimizer.zero_grad()
             step_loss.backward()
             model.opimizer.step()
