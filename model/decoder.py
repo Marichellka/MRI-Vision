@@ -8,9 +8,9 @@ class DeConvBlock(nn.Module):
         super(DeConvBlock, self).__init__()
 
         self.conv_block = nn.Sequential(
-            nn.Conv3d(in_channels, out_channels, kernel, padding=kernel//2),
+            nn.ConvTranspose3d(in_channels, out_channels, kernel+1, stride=stride, padding=1),
             nn.ELU(),
-            nn.ConvTranspose3d(out_channels, out_channels, kernel+1, stride=stride, padding=kernel//2),
+            nn.Conv3d(out_channels, out_channels, kernel, padding=1),
             nn.ELU()
         )
     
@@ -23,12 +23,12 @@ class Decoder(nn.Module):
                  channels: int = 16, blocks: int = 4):
         super(Decoder, self).__init__()
 
-        self.out_conv = nn.Conv3d(channels, 1, 1),
+        self.out_conv = nn.Conv3d(channels, 1, 3, padding=1)
 
         conv_layers = []
         for i in range(blocks):
             in_channels = channels * (2**(blocks-i))
-            out_channels = in_channels/2
+            out_channels = in_channels//2
             conv_layers.append(DeConvBlock(in_channels, out_channels))
             logging.info(f"Added convolution block to decoder (channels: {in_channels}->{out_channels})")
 
@@ -37,12 +37,12 @@ class Decoder(nn.Module):
         self.in_h, self.in_w, self.in_d = [math.ceil(size/(2**blocks)) for size in in_size]
         self.in_channels = channels*(2**blocks)
         self.flat_size = self.in_h*self.in_w*self.in_d*self.in_channels
-        self.dense = nn.Linear(self.flat_size, z_dim)
+        self.dense_out = nn.Linear(z_dim, self.flat_size)
 
 
     def forward(self, z):
-        z = self.dense(z)
-        unflatten = input.view(-1, self.in_channels, self.in_h, self.in_w, self.in_d)
+        z = self.dense_out(z)
+        unflatten = z.view(-1, self.in_channels, self.in_h, self.in_w, self.in_d)
         decoded = self.decode(unflatten)
         out = self.out_conv(decoded)
         return out
