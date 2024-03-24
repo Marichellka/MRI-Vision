@@ -125,3 +125,8 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# data folder
+data/
+model/tensor_board/
+model/saved_model/
