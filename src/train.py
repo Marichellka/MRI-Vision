@@ -1,6 +1,5 @@
 from glob import glob
 
-import torch.nn as nn
 import torch
 from torch.utils.tensorboard import SummaryWriter
 from monai.data import CacheDataset, DataLoader
@@ -12,16 +11,14 @@ from monai.transforms import (
     EnsureTypeD,
     ResizeD
 )
-import monai.transforms
 
 import random
 import logging
 
-from autoencoder import AutoEncoder
+from model.autoencoder import AutoEncoder
 
-BASE_PATH = './model/'
-SAVED_MODEL_PATH = BASE_PATH+'saved_model/model.pth'
-TENSOR_BOARD_PATH = BASE_PATH+'tensor_board'
+SAVED_MODEL_PATH = './results/saved_model/model.pth'
+TENSOR_BOARD_PATH = './logs/tensor_board'
 
 logging.basicConfig(level=20)
 

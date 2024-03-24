@@ -1,8 +1,8 @@
 import torch.nn as nn
 import torch.optim as optim
 
-from encoder import Encoder
-from decoder import Decoder
+from .encoder import Encoder
+from .decoder import Decoder
 
 class AutoEncoder:
     def __init__(self, in_size: tuple[int, int, int], lr: float, device, devide_ids):
