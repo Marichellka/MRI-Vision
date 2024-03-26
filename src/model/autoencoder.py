@@ -1,5 +1,8 @@
+import torch
 import torch.nn as nn
 import torch.optim as optim
+
+from collections import OrderedDict
 
 from .encoder import Encoder
 from .decoder import Decoder
@@ -17,6 +20,17 @@ class AutoEncoder:
         self.device = device
 
         self.loss = nn.MSELoss() 
-    
-    
 
+    def load(self, path: str):
+        model = torch.load(path)
+        encoder_state_dict = OrderedDict()
+        decoder_state_dict = OrderedDict()
+
+        for key, value in model['encoder']:
+            encoder_state_dict[key[7:]] = value
+        
+        for key, value in model['decoder']:
+            decoder_state_dict[key[7:]] = value
+        
+        self.encoder.load_state_dict(encoder_state_dict)
+        self.decoder.load_state_dict(decoder_state_dict)
