@@ -6,7 +6,7 @@ from monai.data import CacheDataset, DataLoader
 from monai.transforms import (
     Compose,
     LoadImageD,
-    EnsureChannelFirstD,
+    AddChannelD,
     ScaleIntensityD,
     EnsureTypeD,
     ResizeD
@@ -22,74 +22,72 @@ TENSOR_BOARD_PATH = './logs/tensor_board'
 
 logging.basicConfig(level=20)
 
-def train(train_ds, eval_ds, model: AutoEncoder, epochs : int):
-    writer = SummaryWriter(TENSOR_BOARD_PATH)
+def train(train_loader: DataLoader, eval_loader: DataLoader, model: AutoEncoder, epochs : int):
+    with SummaryWriter(TENSOR_BOARD_PATH) as writer:
+        step = 0
+        best_loss = 100
+        for epoch in range(epochs):
+            logging.info(f"epoch = {epoch}")
 
-    step = 0
-    best_loss = 100
-    for epoch in range(epochs):
-        logging.info(f"epoch = {epoch}")
+            model.encoder.train()
+            model.decoder.train()
 
-        model.encoder.train()
-        model.decoder.train()
+            epoch_loss = 0
+            for data in train_loader:
+                input = data["file"].to(model.device)
+                encoded = model.encoder(input)
+                restored = model.decoder(encoded)
 
-        epoch_loss = 0
-        for data in train_ds:
-            input = data["file"].to(model.device)
-            encoded = model.encoder(input)
-            restored = model.decoder(encoded)
+                step_loss = model.loss(restored, input)
+                model.opimizer.zero_grad()
+                step_loss.backward()
+                model.opimizer.step()
 
-            step_loss = model.loss(restored, input)
-            model.opimizer.zero_grad()
-            step_loss.backward()
-            model.opimizer.step()
+                epoch_loss += step_loss.item()
 
-            epoch_loss += step_loss.item()
+                writer.add_scalar('step_loss', step_loss, step)
+                logging.info(f"Step loss: {step_loss.item()}")
+                step+=1
 
-            writer.add_scalar('step_loss', step_loss, step)
-            logging.info(f"Step loss: {step_loss.item()}")
-            step+=1
+            epoch_loss = epoch_loss/len(train_loader)
 
-        epoch_loss = epoch_loss/len(train_ds)
+            logging.info(f"epoch loss: {epoch_loss}")
+            writer.add_scalar("epoch_loss", epoch_loss, epoch)
 
-        logging.info(f"epoch loss: {epoch_loss}")
-        writer.add_scalar("epoch_loss", epoch_loss, epoch)
+            loss = evaluate_loss(eval_loader, model)
+            if  loss < best_loss:
+                best_loss = loss
+                logging.info(f"New best lost: {best_loss}")
 
-        loss = evaluate_loss(eval_ds, model)
-        if  loss < best_loss:
-            best_loss = loss
-            logging.info(f"New best lost: {best_loss}")
+                torch.save({
+                    'epoch': epoch,
+                    'encoder': model.encoder.state_dict(),
+                    'decoder': model.decoder.state_dict()
+                }, SAVED_MODEL_PATH)
 
-            torch.save({
-                'epoch': epoch,
-                'encoder': model.encoder.state_dict(),
-                'decoder': model.decoder.state_dict()
-            }, SAVED_MODEL_PATH)
 
-    writer.close()
-
-def evaluate_loss(dataset, model: AutoEncoder):
+def evaluate_loss(data_loader: DataLoader, model: AutoEncoder):
     model.encoder.eval()
     model.decoder.eval()
 
     loss = 0.0
     with torch.no_grad():
-        for data in dataset:
+        for data in data_loader:
             input = data["file"].to(model.device)
             encoded = model.encoder(input)
             restored = model.decoder(encoded)
 
-            loss+=model.loss(restored, input)
+            loss+=model.loss(restored, input).item()
 
-    return loss/len(dataset)
+    return loss/len(data_loader)
 
 
 if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    data_dir = './data/IXI-T2/'
+    data_dir = './data/IXI-T2-extracted/'
     data_files = glob(data_dir+'*.nii.gz')
-    data_files = data_files[:len(data_files)//2]
+    data_files = data_files[:50]
     random.shuffle(data_files)
 
     test_size = int(0.3 * len(data_files))
@@ -100,17 +98,16 @@ if __name__ == '__main__':
 
     batch_size = 8
     workers = 12
-    z_dim = 512
     epochs = 200
 
-    size = (256, 256, 128)
+    size = (160, 160, 96)
 
     pre_process = Compose([
         LoadImageD(keys=["file"]),
-        EnsureChannelFirstD(keys=["file"], channel_dim="no_channel"),
+        AddChannelD(keys=["file"]),
         ResizeD(keys=["file"], spatial_size=size), # mode=('trilinear', 'nearest')
         ScaleIntensityD(keys=["file"]),
-        EnsureTypeD(keys=["file"])
+        EnsureTypeD(keys=["file"]),
     ])
 
     train_ds = CacheDataset(train_files, pre_process, num_workers=workers)
@@ -120,7 +117,7 @@ if __name__ == '__main__':
 
     model = AutoEncoder(size, 1e-3, device, [0,1])
 
-    train(train_ds, val_ds, model, epochs)
+    train(train_loader, val_loader, model, epochs)
 
 
 
