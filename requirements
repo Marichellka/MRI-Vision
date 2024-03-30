@@ -1,5 +1,5 @@
 torch
 tensorboard
 numpy
-monai
+monai==1.2
 tqdm
