@@ -28,16 +28,16 @@ class EnResBlock(nn.Module):
         self.conv_block = nn.Sequential(
             nn.Conv3d(in_channels, in_channels, kernel, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(in_channels),
             nn.Conv3d(in_channels, out_channels, kernel, stride=stride, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(out_channels),
         )
 
         self.skip = nn.Sequential(
             nn.Conv3d(in_channels, out_channels, kernel, stride=stride, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(out_channels),
         )
         logging.info(f"Added residual block to encoder (channels: {in_channels}->{out_channels})")
     
@@ -54,7 +54,7 @@ class Encoder(nn.Module):
         self.input_conv = nn.Sequential(
             nn.Conv3d(1, channels, 3, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(channels),
         )
 
         conv_layers = []

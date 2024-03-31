@@ -19,7 +19,7 @@ class DeConvBlock(nn.Module):
     def forward(self, input):
         return self.conv_block(input)
 
-    
+
 class DeResBlock(nn.Module):
     def __init__(self, in_channels: int, out_channels: int, kernel: int = 3, stride: int = 2):
         super(DeResBlock, self).__init__()
@@ -27,16 +27,16 @@ class DeResBlock(nn.Module):
         self.conv_block = nn.Sequential(
             nn.ConvTranspose3d(in_channels, out_channels, kernel+1, stride=stride, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(out_channels),
             nn.Conv3d(out_channels, out_channels, kernel, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d()
+            nn.BatchNorm3d(out_channels)
         )
 
         self.skip =  nn.Sequential(
             nn.ConvTranspose3d(in_channels, out_channels, kernel+1, stride=stride, padding=1),
             nn.ReLU(),
-            nn.BatchNorm3d(),
+            nn.BatchNorm3d(out_channels),
         )
         logging.info(f"Added residual block to decoder (channels: {in_channels}->{out_channels})")
     
