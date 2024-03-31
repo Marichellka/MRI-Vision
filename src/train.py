@@ -22,11 +22,12 @@ TENSOR_BOARD_PATH = './logs/tensor_board'
 
 logging.basicConfig(level=20)
 
-def train(train_loader: DataLoader, eval_loader: DataLoader, model: AutoEncoder, epochs : int):
+def train(train_loader: DataLoader, eval_loader: DataLoader, 
+          model: AutoEncoder, epochs : int, epoch: int = 0):
     with SummaryWriter(TENSOR_BOARD_PATH) as writer:
         step = 0
         best_loss = 100
-        for epoch in range(epochs):
+        for epoch in range(epoch, epochs):
             logging.info(f"epoch = {epoch}")
 
             model.encoder.train()
@@ -58,12 +59,7 @@ def train(train_loader: DataLoader, eval_loader: DataLoader, model: AutoEncoder,
             if  loss < best_loss:
                 best_loss = loss
                 logging.info(f"New best lost: {best_loss}")
-
-                torch.save({
-                    'epoch': epoch,
-                    'encoder': model.encoder.state_dict(),
-                    'decoder': model.decoder.state_dict()
-                }, SAVED_MODEL_PATH)
+                model.save(SAVED_MODEL_PATH, epoch)
 
 
 def evaluate_loss(data_loader: DataLoader, model: AutoEncoder):
@@ -87,7 +83,7 @@ if __name__ == '__main__':
     
     data_dir = './data/IXI-T2-extracted/'
     data_files = glob(data_dir+'*.nii.gz')
-    data_files = data_files[:50]
+    data_files = data_files[:len(data_files)//3]
     random.shuffle(data_files)
 
     test_size = int(0.3 * len(data_files))
@@ -96,7 +92,7 @@ if __name__ == '__main__':
     train_files = [{"file": file} for file in data_files[-train_size:]]
     logging.info(f"Train size: {train_size}\nTest size: {test_size}")
 
-    batch_size = 8
+    batch_size = 4
     workers = 12
     epochs = 200
 
@@ -115,9 +111,7 @@ if __name__ == '__main__':
     val_ds = CacheDataset(test_files, pre_process, num_workers=workers)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
-    model = AutoEncoder(size, 1e-3, device, [0,1])
+    model = AutoEncoder(size, 1e-3, device, [0], blocks=5)
+    start_epoch = model.load(SAVED_MODEL_PATH)+1
 
-    train(train_loader, val_loader, model, epochs)
-
-
-
+    train(train_loader, val_loader, model, epochs, epoch=start_epoch)
