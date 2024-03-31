@@ -8,12 +8,12 @@ from .encoder import Encoder
 from .decoder import Decoder
 
 class AutoEncoder:
-    def __init__(self, in_size: tuple[int, int, int], lr: float, device, devide_ids):
-        encoder = Encoder(in_size).to(device)
-        decoder = Decoder(in_size).to(device)
+    def __init__(self, in_size: tuple[int, int, int], lr: float, device, device_ids, blocks:int = 4):
+        encoder = Encoder(in_size, blocks=blocks).to(device)
+        decoder = Decoder(in_size, blocks=blocks).to(device)
 
-        self.encoder = nn.DataParallel(encoder, devide_ids)
-        self.decoder = nn.DataParallel(decoder, devide_ids)
+        self.encoder = nn.DataParallel(encoder, device_ids)
+        self.decoder = nn.DataParallel(decoder, device_ids)
 
         parameters = list(self.encoder.parameters()) + list(self.decoder.parameters())
         self.opimizer = optim.Adam(parameters, lr)
@@ -21,9 +21,23 @@ class AutoEncoder:
 
         self.loss = nn.MSELoss() 
 
-    def load(self, path: str):
+    def load(self, path: str) -> int:
         model = torch.load(path, map_location=self.device)
         
         self.encoder.load_state_dict(model['encoder'])
         self.decoder.load_state_dict(model['decoder'])
-        logging.info("Model is loaded from file")
+        self.opimizer.load_state_dict(model['opimizer'])
+        self.loss.load_state_dict(model['loss'])
+        epoch = model['epoch']
+        logging.info(f"Loaded model from epoch {epoch}")
+
+        return epoch
+    
+    def save(self, path: str, epoch: int):
+        torch.save({
+            'epoch': epoch,
+            'encoder': self.encoder.state_dict(),
+            'decoder': self.decoder.state_dict(),
+            'opimizer': self.opimizer.state_dict(),
+            'loss': self.loss.state_dict()
+        }, path)
