@@ -13,9 +13,12 @@ class DeConvBlock(nn.Module):
             nn.Conv3d(out_channels, out_channels, kernel, padding=1),
             nn.ELU()
         )
+        logging.info(f"Added convolution block to decoder (channels: {in_channels}->{out_channels})")
+
     
     def forward(self, input):
         return self.conv_block(input)
+
     
 class DeResBlock(nn.Module):
     def __init__(self, in_channels: int, out_channels: int, kernel: int = 3, stride: int = 2):
@@ -35,9 +38,12 @@ class DeResBlock(nn.Module):
             nn.ReLU(),
             nn.BatchNorm3d(),
         )
+        logging.info(f"Added residual block to decoder (channels: {in_channels}->{out_channels})")
     
+
     def forward(self, input):
         return self.skip(input) + self.conv_block(input)
+
 
 class Decoder(nn.Module):
     def __init__(self, in_size: tuple[int, int, int], 
@@ -51,7 +57,6 @@ class Decoder(nn.Module):
             in_channels = channels * (2**(blocks-i))
             out_channels = in_channels//2
             conv_layers.append(DeResBlock(in_channels, out_channels))
-            logging.info(f"Added convolution block to decoder (channels: {in_channels}->{out_channels})")
 
         self.decode = nn.Sequential(*conv_layers)
 
