@@ -21,7 +21,7 @@ class AutoEncoder:
 
         self.loss = nn.MSELoss() 
 
-    def load(self, path: str) -> int:
+    def load(self, path: str) -> (int, float):
         model = torch.load(path, map_location=self.device)
         
         self.encoder.load_state_dict(model['encoder'])
@@ -31,11 +31,12 @@ class AutoEncoder:
         epoch = model['epoch']
         logging.info(f"Loaded model from epoch {epoch}")
 
-        return epoch
+        return epoch, model['best_loss']
     
-    def save(self, path: str, epoch: int):
+    def save(self, path: str, epoch: int, best_loss: float):
         torch.save({
             'epoch': epoch,
+            'best_loss': best_loss,
             'encoder': self.encoder.state_dict(),
             'decoder': self.decoder.state_dict(),
             'opimizer': self.opimizer.state_dict(),
