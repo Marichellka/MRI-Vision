@@ -102,7 +102,7 @@ if __name__ == '__main__':
     pre_process = Compose([
         LoadImageD(keys=["file"]),
         AddChannelD(keys=["file"]),
-        ResizeD(keys=["file"], spatial_size=size), # mode=('trilinear', 'nearest')
+        ResizeD(keys=["file"], spatial_size=size), 
         ScaleIntensityD(keys=["file"]),
         EnsureTypeD(keys=["file"]),
     ])
@@ -112,8 +112,8 @@ if __name__ == '__main__':
     val_ds = CacheDataset(test_files, pre_process, num_workers=workers)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
-    model = AutoEncoder(size, 1e-3, device, [0], blocks=5)
+    model = AutoEncoder(size, device, lr=1e-3, blocks=5)
     start_epoch = 0
-    start_epoch, best_loss = model.load(SAVED_MODEL_PATH+"model.pth")
+    start_epoch, best_loss = model.train_load(SAVED_MODEL_PATH+"model.pth")
 
     train(train_loader, val_loader, model, epochs, epoch=start_epoch+1, best_loss=best_loss)
