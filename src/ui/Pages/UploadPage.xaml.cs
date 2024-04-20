@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
+using MRI_Vision.UI.Utils;
 
 namespace MRI_Vision.UI.Pages;
 
@@ -20,7 +21,7 @@ public partial class UploadPage : Page
         if (fileDialog.ShowDialog() is true)
         {
             // Redirect to next page
-            // NavigationService!.Navigate();
+            NavigationService!.Navigate(new ImageReviewPage(fileDialog.FileName));
         }
     }
     
@@ -32,7 +33,9 @@ public partial class UploadPage : Page
 
             if (files.Length != 1)
             {
-                MessageBox.Show("You can have only one file");
+                MessageBox.Show(
+                    "You can have only one file", "File Loader",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -40,12 +43,14 @@ public partial class UploadPage : Page
 
             if (filePath.Substring(filePath.Length-4)!=".nii.gz")
             {
-                MessageBox.Show("File extension should be .nii.gz");
+                MessageBox.Show(
+                    "File extension should be .nii.gz", "File Loader", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            
+
             // Redirect to next page
-            // NavigationService!.Navigate();
+            NavigationService!.Navigate(new ImageReviewPage(filePath));
         }
     }
 }

@@ -5,8 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:MRI_Vision.UI.Pages"
       mc:Ignorable="d"
-      Title="UploadPage" Height="450" Width="800">
-    <Grid>
+      Title="UploadPage" Height="500" Width="800">
+    <Grid Background="White">
         <Border BorderThickness="2" Margin="20">
             <Border.BorderBrush>
                 <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
