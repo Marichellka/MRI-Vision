@@ -8,9 +8,14 @@ from .encoder import Encoder
 from .decoder import Decoder
 
 class AutoEncoder:
-    def __init__(self, in_size: tuple[int, int, int], device, lr: float = 1e-3, blocks:int = 4):
-        self.encoder = Encoder(in_size, blocks=blocks).to(device)
-        self.decoder = Decoder(in_size, blocks=blocks).to(device)
+    def __init__(self, in_size: tuple[int, int, int], device, lr: float = 1e-3, 
+                 blocks:int = 4, device_ids: list[int] = [0]):
+        
+        encoder = Encoder(in_size, blocks=blocks).to(device)
+        decoder = Decoder(in_size, blocks=blocks).to(device)
+
+        self.encoder = nn.DataParallel(encoder, device_ids)
+        self.decoder = nn.DataParallel(decoder, device_ids)
 
         parameters = list(self.encoder.parameters()) + list(self.decoder.parameters())
         self.opimizer = optim.Adam(parameters, lr)

@@ -5,11 +5,11 @@ from torch.utils.tensorboard import SummaryWriter
 from monai.data import CacheDataset, DataLoader
 from monai.transforms import (
     Compose,
-    LoadImageD,
-    AddChannelD,
-    ScaleIntensityD,
-    EnsureTypeD,
-    ResizeD
+    LoadImage,
+    AddChannel,
+    ScaleIntensity,
+    EnsureType,
+    Resize
 )
 
 import random
@@ -34,7 +34,7 @@ def train(train_loader: DataLoader, eval_loader: DataLoader,
 
             epoch_loss = 0
             for data in train_loader:
-                input = data["file"].to(model.device)
+                input = data.to(model.device)
                 encoded = model.encoder(input)
                 restored = model.decoder(encoded)
 
@@ -70,7 +70,7 @@ def evaluate_loss(data_loader: DataLoader, model: AutoEncoder):
     loss = 0.0
     with torch.no_grad():
         for data in data_loader:
-            input = data["file"].to(model.device)
+            input = data.to(model.device)
             encoded = model.encoder(input)
             restored = model.decoder(encoded)
 
@@ -89,8 +89,8 @@ if __name__ == '__main__':
 
     test_size = int(0.2 * len(data_files))
     train_size = len(data_files) - test_size
-    test_files = [{"file": file} for file in data_files[:test_size]]
-    train_files = [{"file": file} for file in data_files[-train_size:]]
+    test_files = data_files[:test_size]
+    train_files = data_files[-train_size:]
     logging.info(f"Train size: {len(train_files)}\nTest size: {len(test_files)}")
 
     batch_size = 4
@@ -100,11 +100,11 @@ if __name__ == '__main__':
     size = (160, 160, 96)
 
     pre_process = Compose([
-        LoadImageD(keys=["file"]),
-        AddChannelD(keys=["file"]),
-        ResizeD(keys=["file"], spatial_size=size), 
-        ScaleIntensityD(keys=["file"]),
-        EnsureTypeD(keys=["file"]),
+        LoadImage(image_only=True),
+        AddChannel(),
+        Resize(spatial_size=size), 
+        ScaleIntensity(),
+        EnsureType(),
     ])
 
     train_ds = CacheDataset(train_files, pre_process, num_workers=workers)
