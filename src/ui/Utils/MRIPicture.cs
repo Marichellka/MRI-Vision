@@ -12,7 +12,7 @@ namespace MRI_Vision.UI.Utils
         Top
     }
 
-    internal class MRIPicture
+    public class MRIPicture
     {
         public int Length => _imageData.Length;
         public MRIPictureOrientation Orientation => _orientation;
@@ -22,7 +22,8 @@ namespace MRI_Vision.UI.Utils
         private float _max;
         private MRIPictureOrientation _orientation;
         private int[] _size;
-        private const string ModelModulePath = @"C:\Users\maric\Studying\Diploma\Project\MRI-Vision\src\network\model\utils\loader.py";
+        private Color _colorShift;
+        private const string _modelModulePath = @"C:\Users\maric\Studying\Diploma\Project\MRI-Vision\src\network\model\utils\loader.py";
 
         public MRIPicture(string path)
         {
@@ -30,29 +31,44 @@ namespace MRI_Vision.UI.Utils
             _max = _imageData.Max(x => x.Max(y => y.Max()));
             _size = new[] { _imageData.Length, _imageData[0].Length, _imageData[0][0].Length };
             _orientation = MRIPictureOrientation.Side;
+            _colorShift = Color.FromArgb(255, 255, 255);
             _bitmapSlices = GetBitmapSlices();
         }
 
-        public MRIPicture(float[][][] data, int[] size, float max, MRIPictureOrientation orientation)
+        public MRIPicture(float[][][] data, Color? shift = null)
+        {
+            _imageData = data;
+            _max = _imageData.Max(x => x.Max(y => y.Max()));
+            _size = new[] { _imageData.Length, _imageData[0].Length, _imageData[0][0].Length };
+            _orientation = MRIPictureOrientation.Side;
+            _colorShift = shift ?? Color.FromArgb(255, 255, 255);
+            _bitmapSlices = GetBitmapSlices();
+        }
+
+        public MRIPicture(
+            float[][][] data, int[] size, float max, 
+            MRIPictureOrientation orientation, Color? shift = null)
         {
             _imageData = data;
             _max = max;
             _size = size;
             _orientation = orientation;
+            _colorShift = shift ?? Color.FromArgb(255, 255, 255);
             _bitmapSlices = GetBitmapSlices();
         }
 
         private float[][][] ReadImage(string path)
-        { 
-            using var _ = Py.GIL();
+        {
+            using (_ = Py.GIL())
+            {
+                dynamic os = Py.Import("os");
+                dynamic sys = Py.Import("sys");
+                sys.path.append(os.path.dirname(_modelModulePath));
 
-            dynamic os = Py.Import("os");
-            dynamic sys = Py.Import("sys");
-            sys.path.append(os.path.dirname(ModelModulePath));
+                dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 
-            dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(ModelModulePath));
-
-            return (float[][][])loader.load_image(path);
+                return (float[][][])loader.load_image(path);
+            }
         }
 
         private Bitmap[] GetBitmapSlices()
@@ -74,8 +90,9 @@ namespace MRI_Vision.UI.Utils
             {
                 for (int j = 0; j < _size[2]; j++)
                 {
-                    int color = (int)(slice[i][j] * 255 / _max);
-                    Color pixelColor = Color.FromArgb(color, color, color);
+                    int grayScale = (int)(slice[i][j] * 255 / _max);
+                    Color pixelColor = Color.FromArgb(
+                        grayScale*(_colorShift.R/255), grayScale*(_colorShift.G / 255), grayScale*(_colorShift.B / 255));
                     bitmap.SetPixel(i, j, pixelColor);
                 }
             }
@@ -106,7 +123,7 @@ namespace MRI_Vision.UI.Utils
                 }
             }
 
-            return new MRIPicture(newData, newSize, _max, newOrientation);
+            return new MRIPicture(newData, newSize, _max, newOrientation, _colorShift);
         }
 
         private int[] RotateArray(int[] array, int rotation)

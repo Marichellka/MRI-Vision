@@ -22,32 +22,33 @@ using System.Runtime.CompilerServices;
 namespace MRI_Vision.UI.Pages
 {
     /// <summary>
-    /// Interaction logic for ImageReviewPage.xaml
+    /// Interaction logic for ResultsReviewPage.xaml
     /// </summary>
-    public partial class ImageReviewPage : Page
+    public partial class ResultsReviewPage : Page
     {
-        private Dictionary<MRIPictureOrientation, MRIPicture> _pictures;
+        private Dictionary<MRIPictureOrientation, (MRIPicture, MRIPicture)> _pictures;
         private MRIPictureOrientation _currentOrientation;
-        private string _filePath;
 
-        public ImageReviewPage(string filePath)
+        public ResultsReviewPage(string filePath)
         {
             InitializeComponent();
-            _filePath = filePath;
-            LoadImageAsync();
+            AnalyzeImageAsync(filePath);
         }
 
-        private async void LoadImageAsync()
+        private async void AnalyzeImageAsync(string filePath)
         {
-            var MRIPicture = await Task.Run(() => new MRIPicture(_filePath));
+            var model = await Task.Run(() => new Model());
+
+            (var picture, var anomaly) = await Task.Run(() => model.AnalyzeImage(filePath));
+
             _pictures = new();
-            _pictures.Add(MRIPicture.Orientation, MRIPicture);
-            _currentOrientation = MRIPicture.Orientation;
+            _pictures.Add(picture.Orientation, (picture, anomaly));
+            _currentOrientation = picture.Orientation;
             SetScrollBar(0);
             PictureOrientationComboBox.SelectedItem = _currentOrientation;
         }
 
-        private void SetSliceImage(Bitmap slice)
+        private void SetSliceImage(Bitmap slice, System.Windows.Controls.Image image)
         {
             MemoryStream memory = new MemoryStream();
             slice.Save(memory, System.Drawing.Imaging.ImageFormat.Bmp);
@@ -57,14 +58,15 @@ namespace MRI_Vision.UI.Pages
             imageSource.StreamSource = memory;
             imageSource.CacheOption = BitmapCacheOption.OnLoad;
             imageSource.EndInit();
-            ImageBehavior.SetAnimatedSource(UploadedImage, imageSource);
+            ImageBehavior.SetAnimatedSource(image, imageSource);
         }
 
         private void SetScrollBar(int sliceInd) // TODO: rename
         {
-            ImageScrollBar.Maximum = _pictures[_currentOrientation].Length - 1;
+            ImageScrollBar.Maximum = _pictures[_currentOrientation].Item1.Length - 1;
             ImageScrollBar.Value = sliceInd;
-            SetSliceImage(_pictures[_currentOrientation][sliceInd]);
+            SetSliceImage(_pictures[_currentOrientation].Item1[sliceInd], UploadedImage);
+            SetSliceImage(_pictures[_currentOrientation].Item2[sliceInd], AnomalyImage);
         }
 
         private void OnScroll(object sender, RoutedEventArgs e)
@@ -72,7 +74,8 @@ namespace MRI_Vision.UI.Pages
             if(_pictures is null) return;
 
             int sliceIndex = (int)ImageScrollBar.Value;
-            SetSliceImage(_pictures[_currentOrientation][sliceIndex]);
+            SetSliceImage(_pictures[_currentOrientation].Item1[sliceIndex], UploadedImage);
+            SetSliceImage(_pictures[_currentOrientation].Item2[sliceIndex], AnomalyImage);
         }
 
         private void PictureOrientationComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -89,28 +92,26 @@ namespace MRI_Vision.UI.Pages
             }
             else
             {
-                var newImage = _pictures[_currentOrientation].RotatePicture(orientation);
-                _pictures.Add(orientation, newImage);
+                var newImage = _pictures[_currentOrientation].Item1.RotatePicture(orientation);
+                var newAnomaly = _pictures[_currentOrientation].Item2.RotatePicture(orientation);
+                _pictures.Add(orientation, (newImage, newAnomaly));
                 _currentOrientation = orientation;
             }
 
-            int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Length);
+            int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Item1.Length);
             SetScrollBar(newInd);
         }
 
-        private void AnalyzeButtonClick(object sender, RoutedEventArgs e)
+        private void AnomalyMaskToggleButtonClick(object sender, RoutedEventArgs e)
         {
-            NavigationService!.Navigate(new ResultsReviewPage(_filePath));
-        }
-    }
-
-    class PictureOrientation: ObservableCollection<MRIPictureOrientation>
-    {
-        public PictureOrientation()
-        {
-            Add(MRIPictureOrientation.Front);
-            Add(MRIPictureOrientation.Side);
-            Add(MRIPictureOrientation.Top);
+            if(AnomalyMaskToggleButton.IsChecked == false)
+            {
+                AnomalyImage.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                AnomalyImage.Visibility = Visibility.Visible;
+            }
         }
     }
 }

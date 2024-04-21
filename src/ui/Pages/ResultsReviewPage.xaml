@@ -1,4 +1,4 @@
-﻿<Page x:Class="MRI_Vision.UI.Pages.ImageReviewPage"
+﻿<Page x:Class="MRI_Vision.UI.Pages.ResultsReviewPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,18 +7,21 @@
       xmlns:local="clr-namespace:MRI_Vision.UI.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ImageReviewPage">
+      Title="ResultReviewPage">
 
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="300"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
+        <Grid Grid.Row="0">
             <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
                    Name="UploadedImage" MinHeight="200" MinWidth="200" MaxHeight="300"
                    gif:ImageBehavior.AnimatedSource="/Images/loading.gif"/>
-        </StackPanel>
+            <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
+                Name="AnomalyImage" MinHeight="200" MinWidth="200" MaxHeight="300"
+                Opacity="0.25"/>
+        </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
@@ -39,9 +42,8 @@
             <ScrollBar Name="ImageScrollBar" Scroll="OnScroll"
                        VerticalAlignment="Top" Grid.Row="1" 
                        Width="300" Orientation="Horizontal" />
-            <Button Name="AnalyzeButton" Grid.Row="2" 
-                    Content="Analyze" FontSize="24" 
-                    Width="250" Click="AnalyzeButtonClick" />
+            <ToggleButton x:Name="AnomalyMaskToggleButton" Content="Anomaly Mask" IsChecked="True"
+                          Grid.Row="2" Width="100" Click="AnomalyMaskToggleButtonClick"/>
         </Grid>
     </Grid>
 </Page>

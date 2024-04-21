@@ -13,6 +13,9 @@
     <Page Update="Pages\GeneralResultsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Pages\ResultsReviewPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Pages\ImageReviewPage.xaml">
       <SubType>Designer</SubType>
     </Page>
