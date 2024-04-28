@@ -5,9 +5,12 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:MRI_Vision.UI.Pages"
       mc:Ignorable="d"
-      Title="UploadPage" Height="500" Width="800">
-    <Grid Background="White">
-        <Border BorderThickness="2" Margin="20">
+      Title="UploadPage" Height="500" Width="800"
+      Background="#131313">
+    <Grid>
+        <Image Source="/Images/brain.jpg" VerticalAlignment="Bottom"/>
+        <Border BorderThickness="2" Margin="20" 
+                Name="DropBox" Drop="DropBox_Drop" AllowDrop="true" >
             <Border.BorderBrush>
                 <DrawingBrush Viewport="0,0,8,8" ViewportUnits="Absolute" TileMode="Tile">
                     <DrawingBrush.Drawing>
@@ -46,12 +49,25 @@
                     </Style>
                 </Button.Style>
                 
-                <StackPanel Margin="100,0" Name="DropBox" Drop="DropBox_Drop" AllowDrop="true" VerticalAlignment="Center">
-                    <Image>
-                        <Image.Source>
-                            <BitmapImage UriSource="/Images/dropBox.jpg"/>
-                        </Image.Source>
-                    </Image>
+                <StackPanel VerticalAlignment="Stretch">
+                    <TextBlock Text="WELCOME"  FontSize="50" 
+                               Foreground="WhiteSmoke"
+                               FontFamily="Yu Gothic Medium"
+                               VerticalAlignment="Top"/>
+                    <TextBlock Text="Drag or Drop file to upload"
+                               Foreground="WhiteSmoke"
+                               FontFamily="Yu Gothic Medium"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="or"
+                               Foreground="WhiteSmoke"
+                               FontFamily="Yu Gothic Medium"
+                               HorizontalAlignment="Center"/>
+                    <Button Content="Select file to Upload"
+                            Background="Transparent"
+                            BorderBrush="AntiqueWhite"
+                               Foreground="WhiteSmoke"
+                               FontFamily="Yu Gothic Medium"
+                               HorizontalAlignment="Center"/>
                 </StackPanel>
             </Button>
         </Border>
