@@ -6,7 +6,8 @@ from monai.transforms import (
     AddChannel,
     ScaleIntensity,
     EnsureType,
-    Resize
+    Resize,
+    Orientation
 )
 
 import sys
@@ -27,6 +28,7 @@ def load_data(files: list[str]) -> CacheDataset:
     pre_process = Compose([
         LoadImage(image_only=True),
         AddChannel(),
+        Orientation(axcodes='LAS'),
         Resize(spatial_size=size), 
         ScaleIntensity(),
         EnsureType(),
@@ -40,6 +42,7 @@ def load_image(path: str, size: tuple[int, int, int] = (160, 160, 96)):
     loadImage = Compose([
         LoadImage(image_only=True), 
         AddChannel(),
+        Orientation(axcodes='LAS'),
         Resize(spatial_size=size),
     ])
     [image] = loadImage(path).array
@@ -50,6 +53,7 @@ def process_image(path: str, model: AutoEncoder) -> tuple:
     loadImage = Compose([
         LoadImage(image_only=True),
         AddChannel(),
+        Orientation(axcodes='LAS'),
         Resize(spatial_size=(160, 160, 96)), 
         ScaleIntensity(),
         EnsureType(),
