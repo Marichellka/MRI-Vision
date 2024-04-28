@@ -4,7 +4,7 @@ namespace MRI_Vision.UI.Utils;
 
 internal class AnomalyColorStrategy(Color? shift = null) : IColorStrategy
 {
-    public Color Shift { get; } = shift ?? Color.Red;
+    public Color Shift { get; } = shift ?? Color.DarkRed;
 
     public Color GetColorFromGrayScale(int grayScale)
     {

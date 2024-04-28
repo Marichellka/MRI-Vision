@@ -27,10 +27,15 @@ namespace MRI_Vision.UI.Pages
 
         private void GetPlot()
         {
+            PlotImage.Plot.Clear();
+
             float[] ys = _pictures[_currentOrientation].Item2.AnomalyIndexes;
             int[] xs = Enumerable.Range(0, ys.Length).ToArray();
-            PlotImage.Plot.Add.Scatter(xs, ys);
+            var plot = PlotImage.Plot.Add.Scatter(xs, ys);
+
+            plot.Color = ScottPlot.Color.FromHex("#961b1b");
             PlotImage.Plot.Axes.AutoScale();
+            PlotImage.Plot.Style.DarkMode();
             PlotImage.Refresh();
         }
 
@@ -97,6 +102,7 @@ namespace MRI_Vision.UI.Pages
                 int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Item1.Length - 1);
                 SetScrollBar(newInd);
                 SetSlice(newInd);
+                GetPlot();
             }
             else
             {
@@ -116,6 +122,7 @@ namespace MRI_Vision.UI.Pages
             int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Item1.Length - 1);
             SetScrollBar(newInd);
             SetSlice(newInd);
+            GetPlot();
         }
 
         private void AnomalyMaskCheckBoxClick(object sender, RoutedEventArgs e)
