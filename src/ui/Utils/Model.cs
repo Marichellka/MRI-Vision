@@ -28,7 +28,7 @@ public class Model
         }
     }
 
-    public (MRIPicture, MRIPicture) AnalyzeImage(string path)
+    public (MRIPicture, AnomalyPicture) AnalyzeImage(string path)
     {
         using (var _ = Py.GIL())
         {
@@ -43,7 +43,7 @@ public class Model
             var picture = (float[][][])tmp[0];
             var anomaly = (float[][][])tmp[1];
          
-            return (new MRIPicture(picture), new MRIPicture(anomaly, Color.FromArgb(255, 0, 0)));
+            return (new MRIPicture(picture), new AnomalyPicture(anomaly, Color.FromArgb(255, 0, 0)));
         }
     }
 }
