@@ -41,9 +41,9 @@ public class Model
             var tmp = loader.process_image(path, _model);
 
             var picture = (float[][][])tmp[0];
-            var anomaly = (float[][][])tmp[1];
+            var restored = (float[][][])tmp[1];
          
-            return (new MRIPicture(picture), new AnomalyPicture(anomaly, Color.FromArgb(255, 0, 0)));
+            return (new MRIPicture(picture), new AnomalyPicture(picture, restored, Color.FromArgb(255, 0, 0)));
         }
     }
 }

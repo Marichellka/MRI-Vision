@@ -64,9 +64,7 @@ def process_image(path: str, model: AutoEncoder) -> tuple:
         input = image.to(model.device)
         encoded = model.encoder(input)
         restored = model.decoder(encoded)
-
-        anomaly = abs(input-restored)
     
     [[input]] = input
-    [[anomaly]] = anomaly
-    return input.tolist(), anomaly.tolist()
+    [[restored]] = restored
+    return input.tolist(), restored.tolist()
