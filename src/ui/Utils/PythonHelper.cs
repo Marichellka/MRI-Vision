@@ -25,7 +25,8 @@ public static class PythonHelper
                 var action = _actions.Take();
                 action.Invoke();
             }
-        }).Start();
+        })
+        { IsBackground = true}.Start();
     }
 
     public static MoveToAwaitable MoveTo()

@@ -29,4 +29,11 @@ public partial class MainWindow : Window
         _ = ModelHelper.GetModelAsync();
         base.OnInitialized(e);
     }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        base.OnClosed(e);
+
+        Application.Current.Shutdown();
+    }
 }
