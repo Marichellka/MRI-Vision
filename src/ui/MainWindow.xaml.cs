@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MRI_Vision.UI.Pages;
+using MRI_Vision.UI.Utils;
 
 namespace MRI_Vision.UI;
 
@@ -21,5 +22,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         MainFrame.Content = new UploadPage();
+    }
+
+    protected override void OnInitialized(EventArgs e)
+    {
+        _ = ModelHelper.GetModelAsync();
+        base.OnInitialized(e);
     }
 }

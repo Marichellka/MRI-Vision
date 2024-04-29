@@ -24,7 +24,7 @@ namespace MRI_Vision.UI.Utils
         private const string _modelModulePath = @"C:\Users\maric\Studying\Diploma\Project\MRI-Vision\src\network\model\utils\loader.py";
 
         public MRIPicture(string path)
-            : this(ReadImage(path))
+            : this(ReadImageAsync(path).Result)
         { }
 
         public MRIPicture(float[][][] data, IColorStrategy? colorStrategy = null)
@@ -49,8 +49,10 @@ namespace MRI_Vision.UI.Utils
             _bitmapSlices = BitmapUtilities.GetBitmapSlices(data, size, max, _colorStrategy);
         }
 
-        private static float[][][] ReadImage(string path)
+        private static async Task<float[][][]> ReadImageAsync(string path)
         {
+            await PythonHelper.MoveTo();
+
             using (_ = Py.GIL())
             {
                 dynamic os = Py.Import("os");

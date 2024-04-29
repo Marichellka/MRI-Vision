@@ -9,13 +9,19 @@ public class Model
     private const string _modelModulePath = @"C:\Users\maric\Studying\Diploma\Project\MRI-Vision\src\network\model\utils\loader.py";
     private dynamic _model;
 
-    public Model(string path= "C:\\Users\\maric\\Studying\\Diploma\\Project\\MRI-Vision\\content\\saved_model\\best_model.pth")
-    {
-        LoadModel(path);
-    }
+    private Model() { }
     
-    private void LoadModel(string path)
+    public static async Task<Model> CreateAsync(string path = "C:\\Users\\maric\\Studying\\Diploma\\Project\\MRI-Vision\\content\\saved_model\\best_model.pth")
     {
+        Model model = new();
+        await model.LoadModelAsync(path);
+        return model;
+    }
+
+    private async Task LoadModelAsync(string path)
+    {
+        await PythonHelper.MoveTo();
+
         using (var _ = Py.GIL())
         {
             dynamic os = Py.Import("os");
@@ -28,8 +34,10 @@ public class Model
         }
     }
 
-    public (MRIPicture, AnomalyPicture) AnalyzeImage(string path)
+    public async Task<(MRIPicture, AnomalyPicture)> AnalyzeImageAsync(string path)
     {
+        await PythonHelper.MoveTo();
+
         using (var _ = Py.GIL())
         {
             dynamic os = Py.Import("os");

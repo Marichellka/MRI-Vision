@@ -6,6 +6,7 @@ using System.Drawing;
 using WpfAnimatedGif;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace MRI_Vision.UI.Pages
 {
@@ -41,9 +42,9 @@ namespace MRI_Vision.UI.Pages
 
         private async void AnalyzeImageAsync(string filePath)
         {
-            var model = await Task.Run(() => new Model());
+            var model = await ModelHelper.GetModelAsync();
 
-            (var picture, var anomaly) = await Task.Run(() => model.AnalyzeImage(filePath));
+            (var picture, var anomaly) = await model.AnalyzeImageAsync(filePath);
 
             _pictures = new();
             _pictures.Add(picture.Orientation, (picture, anomaly));
