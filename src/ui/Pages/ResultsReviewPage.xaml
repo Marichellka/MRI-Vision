@@ -31,14 +31,14 @@
             <Grid Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" 
                   Margin="5" Background="Black">
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
-                       Name="UploadedImage"
-                       gif:ImageBehavior.AnimatedSource="/Images/loading.gif"/>
+                       Name="UploadedImage"/>
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-                       Name="AnomalyImage"
-                       Opacity="1"/>
+                       Name="AnomalyImage"/>
                 <ScottPlot:WpfPlot HorizontalAlignment="Center" Background="Transparent"
-                                   Name="PlotImage" Height="300" Width="300"
-                                   Visibility="Hidden"/>
+                                   Name="PlotImage" Height="300" Width="300"/>
+                <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
+                       Name="LoadingImage"
+                       gif:ImageBehavior.AnimatedSource="/Images/loading.gif"/>
                 <CheckBox Margin="5"
                           x:Name="AnomalyMaskCheckBox" Content="Anomaly Mask" IsChecked="True"
                           VerticalAlignment="Bottom" HorizontalAlignment="Right"

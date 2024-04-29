@@ -54,7 +54,7 @@ namespace MRI_Vision.UI.Pages
             SetSlice(0);
             PictureOrientationComboBox.SelectedItem = _currentOrientation;
             GetPlot();
-            PlotImage.Visibility = Visibility.Visible;
+            LoadingImage.Visibility = Visibility.Hidden;
         }
 
         protected void SetSlice(int index)
@@ -116,6 +116,7 @@ namespace MRI_Vision.UI.Pages
 
         private async void RotatePictureAsync(MRIPictureOrientation orientation)
         {
+            LoadingImage.Visibility = Visibility.Visible;
             var newImage = await Task.Run(() => _pictures[_currentOrientation].Item1.RotatePicture(orientation));
             var newAnomalyImage = await Task.Run(() => _pictures[_currentOrientation].Item2.RotatePicture(orientation));
             _pictures.Add(orientation, (newImage, newAnomalyImage));
@@ -125,6 +126,7 @@ namespace MRI_Vision.UI.Pages
             SetScrollBar(newInd);
             SetSlice(newInd);
             GetPlot();
+            LoadingImage.Visibility = Visibility.Hidden;
         }
 
         private void AnomalyMaskCheckBoxClick(object sender, RoutedEventArgs e)
