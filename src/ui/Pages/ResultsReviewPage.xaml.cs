@@ -33,8 +33,9 @@ namespace MRI_Vision.UI.Pages
             float[] ys = _pictures[_currentOrientation].Item2.AnomalyIndexes;
             int[] xs = Enumerable.Range(0, ys.Length).ToArray();
             var plot = PlotImage.Plot.Add.Scatter(xs, ys);
-
             plot.Color = ScottPlot.Color.FromHex("#961b1b");
+
+            PlotImage.Plot.Add.HorizontalLine(0.01, color: ScottPlot.Color.FromHex("#5aa840"));
             PlotImage.Plot.Axes.AutoScale();
             PlotImage.Plot.Style.DarkMode();
             PlotImage.Refresh();

@@ -7,7 +7,7 @@ namespace MRI_Vision.UI.Utils
         public float[] AnomalyIndexes => _anomalyIndexes;
 
         private float[] _anomalyIndexes;
-        private const float _threshold = 0.1f;
+        private const float _threshold = 0.2f;
 
         public AnomalyPicture(
             float[][][] inputData,
@@ -47,6 +47,7 @@ namespace MRI_Vision.UI.Utils
                         else
                         {
                             float anomaly = Math.Abs(inputData[i][j][k] - restoredData[i][j][k]);
+
                             if (anomaly > _threshold)
                                 anomalyData[i][j][k] = anomaly;
                         }
@@ -60,25 +61,25 @@ namespace MRI_Vision.UI.Utils
         private float[] CalculateAnomalyIndexes()
         {
             float[] anomalyIndexes = new float[_imageData.Length];
+            int sliceSize = _size[1] * _size[2];
 
             for (int i = 0; i < _size[0]; i++)
             {
                 float anomalySum = 0;
-                float anomalyCount = 0;
+                int anomalyCount = 0;
                 for (int j = 0; j < _size[1]; j++)
                 {
                     for (int k = 0; k < _size[2]; k++)
                     {
                         float anomalyIndex = _imageData[i][j][k] / _max;
-                        if (anomalyIndex > _threshold)
+                        if (anomalyIndex > 0.001)
                         {
                             anomalySum += anomalyIndex;
                             anomalyCount++;
                         }
-
                     }
                 }
-                anomalyIndexes[i] = anomalySum/anomalyCount;
+                anomalyIndexes[i] = anomalySum / (sliceSize-anomalyCount);
             }
 
             return anomalyIndexes;
