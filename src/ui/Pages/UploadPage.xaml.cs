@@ -11,8 +11,8 @@ public partial class UploadPage : Page
     {
         InitializeComponent();
     }
-    
-    public void OpenExplorerButton_Click(object sender, RoutedEventArgs routedEventArgs)
+
+    private void OpenExplorerButton_Click(object sender, RoutedEventArgs routedEventArgs)
     {
         OpenFileDialog fileDialog= new OpenFileDialog(); 
         fileDialog.DefaultExt = ".nii.gz"; // Required file extension 
@@ -20,8 +20,7 @@ public partial class UploadPage : Page
 
         if (fileDialog.ShowDialog() is true)
         {
-            // Redirect to next page
-            NavigationService!.Navigate(new ImageReviewPage(fileDialog.FileName));
+            NavigateToNextPage(fileDialog.FileName);
         }
     }
     
@@ -49,8 +48,23 @@ public partial class UploadPage : Page
                 return;
             }
 
-            // Redirect to next page
+            NavigateToNextPage(filePath);
+        }
+    }
+
+    private void NavigateToNextPage(string filePath)
+    {
+        var messageBoxResult = MessageBox.Show(
+            "Would you like to review the image?", "Review image?",
+            MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (messageBoxResult == MessageBoxResult.Yes)
+        {
             NavigationService!.Navigate(new ImageReviewPage(filePath));
+        }
+        else
+        {
+            NavigationService!.Navigate(new ResultsReviewPage(filePath));
         }
     }
 }
