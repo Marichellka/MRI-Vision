@@ -1,0 +1,7 @@
+torch>=0.4.0
+tensorboard
+numpy>=1.14.5
+monai==1.2
+tqdm
+scikit-image>=0.14.0
+SimpleITK>=2.0.2

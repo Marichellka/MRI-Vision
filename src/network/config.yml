@@ -1,0 +1,4 @@
+AutoEncoder:
+  blocks: 5
+  size: [160, 160, 96]
+  orientation: 'LAS'

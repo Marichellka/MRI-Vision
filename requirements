@@ -1,5 +1,0 @@
-torch
-tensorboard
-numpy
-monai==1.2
-tqdm

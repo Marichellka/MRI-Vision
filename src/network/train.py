@@ -9,6 +9,7 @@ from monai.transforms import (
     AddChannel,
     ScaleIntensity,
     EnsureType,
+    Orientation,
     Resize
 )
 
@@ -16,6 +17,7 @@ import random
 import logging
 
 from model.autoencoder import AutoEncoder
+from utils.load_config import load_config
 
 SAVED_MODEL_PATH = './content/saved_model/'
 TENSOR_BOARD_PATH = './content/tensor_board'
@@ -58,7 +60,7 @@ def train(train_loader: DataLoader, eval_loader: DataLoader,
             if  loss < best_loss:
                 best_loss = loss
                 logging.info(f"New best lost: {best_loss}")
-                model.save(SAVED_MODEL_PATH+"best_model.pth", epoch, best_loss)
+                model.save(SAVED_MODEL_PATH+"best_model.pth")
 
             model.save(SAVED_MODEL_PATH+"model.pth", epoch, best_loss)
 
@@ -84,7 +86,6 @@ if __name__ == '__main__':
     
     data_dir = './content/data/IXI-T2-extracted/'
     data_files = glob(data_dir+'*.nii.gz')
-    data_files = data_files[:len(data_files)//2]
     random.shuffle(data_files)
 
     test_size = int(0.2 * len(data_files))
@@ -93,15 +94,18 @@ if __name__ == '__main__':
     train_files = data_files[-train_size:]
     logging.info(f"Train size: {len(train_files)}\nTest size: {len(test_files)}")
 
+    config = load_config()
+
     batch_size = 4
     workers = 12
     epochs = 200
 
-    size = (160, 160, 96)
+    size = tuple(config['size'])
 
     pre_process = Compose([
         LoadImage(image_only=True),
         AddChannel(),
+        Orientation(axcodes=config['orientation']),
         Resize(spatial_size=size), 
         ScaleIntensity(),
         EnsureType(),
@@ -112,8 +116,7 @@ if __name__ == '__main__':
     val_ds = CacheDataset(test_files, pre_process, num_workers=workers)
     val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
 
-    model = AutoEncoder(size, device, lr=1e-3, blocks=5)
-    start_epoch = 0
+    model = AutoEncoder(size, device, lr=1e-3, blocks=config['blocks'])
     start_epoch, best_loss = model.train_load(SAVED_MODEL_PATH+"model.pth")
 
     train(train_loader, val_loader, model, epochs, epoch=start_epoch+1, best_loss=best_loss)
