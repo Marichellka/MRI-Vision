@@ -1,6 +1,7 @@
-﻿using System.Drawing;
+﻿using MRI_Vision.UI.Utils;
+using System.Drawing;
 
-namespace MRI_Vision.UI.Utils
+namespace MRI_Vision.Domain.Picture
 {
     public class AnomalyPicture : MRIPicture
     {
@@ -8,6 +9,7 @@ namespace MRI_Vision.UI.Utils
 
         private float[] _anomalyIndexes;
         private const float _threshold = 0.2f;
+        private const float _epsilon = 0.01f;
 
         public AnomalyPicture(
             float[][][] inputData,
@@ -31,18 +33,18 @@ namespace MRI_Vision.UI.Utils
         private static float[][][] GetAnomalyData(float[][][] inputData, float[][][] restoredData)
         {
             float[][][] anomalyData = new float[inputData.Length][][];
-            float minInput = inputData.Min(x=> x.Min(y => y.Min()));
+            float minInput = inputData.Min(x => x.Min(y => y.Min()));
             float minRestored = inputData.Min(x => x.Min(y => y.Min()));
 
-            for (int i = 0; i<anomalyData.Length; i++)
+            for (int i = 0; i < anomalyData.Length; i++)
             {
                 anomalyData[i] = new float[inputData[i].Length][];
                 for (int j = 0; j < anomalyData[i].Length; j++)
                 {
                     anomalyData[i][j] = new float[inputData[i][j].Length];
-                    for (int k = 0; k< anomalyData[i][j].Length; k++)
+                    for (int k = 0; k < anomalyData[i][j].Length; k++)
                     {
-                        if (restoredData[i][j][k] <= minRestored  + 0.001 || inputData[i][j][k] <= minInput + 0.001)
+                        if (restoredData[i][j][k] <= minRestored + _epsilon || inputData[i][j][k] <= minInput + _epsilon)
                             anomalyData[i][j][k] = 0;
                         else
                         {
@@ -50,6 +52,8 @@ namespace MRI_Vision.UI.Utils
 
                             if (anomaly > _threshold)
                                 anomalyData[i][j][k] = anomaly;
+                            else
+                                anomalyData[i][j][k] = 0;
                         }
                     }
                 }
@@ -72,14 +76,14 @@ namespace MRI_Vision.UI.Utils
                     for (int k = 0; k < _size[2]; k++)
                     {
                         float anomalyIndex = _imageData[i][j][k] / _max;
-                        if (anomalyIndex > 0.001)
+                        if (anomalyIndex > _epsilon)
                         {
                             anomalySum += anomalyIndex;
                             anomalyCount++;
                         }
                     }
                 }
-                anomalyIndexes[i] = anomalySum / (sliceSize-anomalyCount);
+                anomalyIndexes[i] = anomalySum / (sliceSize - anomalyCount);
             }
 
             return anomalyIndexes;

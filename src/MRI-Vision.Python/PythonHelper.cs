@@ -1,13 +1,8 @@
 ﻿using Python.Runtime;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MRI_Vision.UI.Utils;
+namespace MRI_Vision.Python;
 
 public static class PythonHelper
 {
@@ -26,7 +21,7 @@ public static class PythonHelper
                 action.Invoke();
             }
         })
-        { IsBackground = true}.Start();
+        { IsBackground = true }.Start();
     }
 
     public static MoveToAwaitable MoveTo()
@@ -43,7 +38,7 @@ public static class PythonHelper
     {
         public bool IsCompleted { get; private set; }
 
-        public void GetResult() {  }
+        public void GetResult() { }
 
         public void OnCompleted(Action continuation)
         {

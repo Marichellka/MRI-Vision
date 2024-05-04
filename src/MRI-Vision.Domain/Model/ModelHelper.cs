@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MRI_Vision.Domain.Model;
 
-namespace MRI_Vision.UI.Utils;
-
-internal static class ModelHelper
+public static class ModelHelper
 {
     private static Task<Model> _modelTask;
 

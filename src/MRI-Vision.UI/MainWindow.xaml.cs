@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MRI_Vision.UI.Pages;
-using MRI_Vision.UI.Utils;
+using MRI_Vision.Domain.Model;
 
 namespace MRI_Vision.UI;
 

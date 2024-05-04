@@ -1,5 +1,4 @@
-﻿using MRI_Vision.UI.Utils;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Drawing;
@@ -10,6 +9,8 @@ using System.Windows.Media.Media3D;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using ScottPlot.Plottables;
+using MRI_Vision.Domain.Picture;
+using MRI_Vision.Domain.Model;
 
 namespace MRI_Vision.UI.Pages
 {

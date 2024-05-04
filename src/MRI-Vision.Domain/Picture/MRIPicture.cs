@@ -1,8 +1,9 @@
-﻿using Python.Runtime;
+﻿using MRI_Vision.Python;
+using MRI_Vision.UI.Utils;
+using Python.Runtime;
 using System.Drawing;
-using System.IO;
 
-namespace MRI_Vision.UI.Utils
+namespace MRI_Vision.Domain.Picture
 {
     public enum MRIPictureOrientation
     {
@@ -21,7 +22,7 @@ namespace MRI_Vision.UI.Utils
         protected Bitmap[] _bitmapSlices;
         protected IColorStrategy _colorStrategy;
         protected MRIPictureOrientation _orientation;
-        private const string _modelModulePath = @"C:\Users\maric\Studying\Diploma\Project\MRI-Vision\src\network\model\utils\loader.py";
+        private const string _modelModulePath = @".\utils\image_helper.py";
 
         public MRIPicture(string path)
             : this(ReadImageAsync(path).Result)
@@ -57,7 +58,6 @@ namespace MRI_Vision.UI.Utils
             {
                 dynamic os = Py.Import("os");
                 dynamic sys = Py.Import("sys");
-                sys.path.append(os.path.dirname(_modelModulePath));
 
                 dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 

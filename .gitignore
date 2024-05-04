@@ -78,6 +78,8 @@ cython_debug/
 
 content/
 
+HD-BET/
+
 # C#
 # Build results
 [Dd]ebug/

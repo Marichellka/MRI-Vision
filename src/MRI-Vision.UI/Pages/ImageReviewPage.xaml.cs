@@ -1,5 +1,4 @@
-﻿using MRI_Vision.UI.Utils;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -7,6 +6,7 @@ using System.Drawing;
 using WpfAnimatedGif;
 using System.IO;
 using System.Collections.ObjectModel;
+using MRI_Vision.Domain.Picture;
 
 namespace MRI_Vision.UI.Pages
 {

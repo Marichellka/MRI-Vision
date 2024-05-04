@@ -53,8 +53,8 @@
                     <TextBlock Text="WELCOME"  FontSize="50" 
                                Foreground="WhiteSmoke"
                                FontFamily="Yu Gothic Medium"
-                               VerticalAlignment="Top"/>
-                    <TextBlock Text="Drag or Drop file to upload"
+                               VerticalAlignment="Top" Margin="20"/>
+                    <TextBlock Text="Drag and drop file to Upload"
                                Foreground="WhiteSmoke"
                                FontFamily="Yu Gothic Medium"
                                HorizontalAlignment="Center"/>
@@ -65,9 +65,10 @@
                     <Button Content="Select file to Upload"
                             Background="Transparent"
                             BorderBrush="AntiqueWhite"
-                               Foreground="WhiteSmoke"
-                               FontFamily="Yu Gothic Medium"
-                               HorizontalAlignment="Center"/>
+                            Foreground="WhiteSmoke"
+                            FontFamily="Yu Gothic Medium"
+                            HorizontalAlignment="Center"
+                            Margin="5"/>
                 </StackPanel>
             </Button>
         </Border>
