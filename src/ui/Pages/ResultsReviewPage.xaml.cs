@@ -7,6 +7,9 @@ using WpfAnimatedGif;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Forms;
+using Microsoft.Win32;
+using ScottPlot.Plottables;
 
 namespace MRI_Vision.UI.Pages
 {
@@ -162,6 +165,60 @@ namespace MRI_Vision.UI.Pages
         private void ReuploadButtonClick(object sender, RoutedEventArgs e)
         {
             NavigationService!.Navigate(new UploadPage());
+        }
+
+        private void DownloadButtonClick(object sender, RoutedEventArgs e)
+        {
+
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.DefaultExt = ".png";
+            dialog.Filter = "PNG Image|*.png";
+
+            bool result = dialog.ShowDialog() ?? false;
+            if (result && !string.IsNullOrWhiteSpace(dialog.FileName))
+            {
+                if (PlotImage.Visibility == Visibility.Visible)
+                {
+                    PlotImage.Plot.SavePng(dialog.FileName,(int)PlotImage.ActualWidth,(int)PlotImage.ActualHeight);
+                }
+                else
+                {
+                    if (AnomalyMaskCheckBox.IsChecked == true)
+                    {
+                        var image = _pictures[_currentOrientation].Item1[(int)ImageScrollBar.Value];
+                        var anomaly = _pictures[_currentOrientation].Item2[(int)ImageScrollBar.Value];
+                        var merged = new Bitmap(image.Width, image.Height);
+                        var oppacity = AnomalyImage.Opacity;
+                        for (int i = 0; i< image.Width; i++)
+                        {
+                            for (int j = 0; j < image.Height; j++)
+                            {
+                                var anomalyPixel = anomaly.GetPixel(i, j);
+                                var imagePixel = image.GetPixel(i, j);
+                                var colors = new double[]{
+                                    (anomalyPixel.R * oppacity * (anomalyPixel.A/255.0)) + imagePixel.R,
+                                    (anomalyPixel.G * oppacity * (anomalyPixel.A/255.0)) + imagePixel.G,
+                                    (anomalyPixel.B * oppacity * (anomalyPixel.A/255.0)) + imagePixel.B};
+                                var max = colors.Max();
+                                max = max > 255 ? max : 255;
+
+                                var newColor = System.Drawing.Color.FromArgb(
+                                    (int)(colors[0]/max*255),
+                                    (int)(colors[1]/max*255),
+                                    (int)(colors[2]/max*255));
+                                merged.SetPixel(i, j, newColor);
+                            }
+                        }
+
+                        merged.Save(dialog.FileName);
+                    }
+                    else
+                    {
+                        var image = _pictures[_currentOrientation].Item1[(int)ImageScrollBar.Value];
+                        image.Save(dialog.FileName);
+                    }
+                }
+            }
         }
     }
 }
