@@ -1,5 +1,5 @@
-﻿using MRI_Vision.Python;
-using MRI_Vision.UI.Utils;
+﻿using MRI_Vision.Domain.Picture.ColorStrategy;
+using MRI_Vision.Python;
 using Python.Runtime;
 using System.Drawing;
 
@@ -7,8 +7,8 @@ namespace MRI_Vision.Domain.Picture
 {
     public enum MRIPictureOrientation
     {
-        Front,
         Side,
+        Front,
         Top
     }
 

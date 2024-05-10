@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using MRI_Vision.UI.Utils;
 
 namespace MRI_Vision.UI.Pages;
 

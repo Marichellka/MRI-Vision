@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace MRI_Vision.UI.Utils;
+namespace MRI_Vision.Domain.Picture.ColorStrategy;
 
 public interface IColorStrategy
 {

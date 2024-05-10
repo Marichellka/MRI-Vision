@@ -1,4 +1,4 @@
-﻿using MRI_Vision.UI.Utils;
+﻿using MRI_Vision.Domain.Picture.ColorStrategy;
 using System.Drawing;
 
 namespace MRI_Vision.Domain.Picture;

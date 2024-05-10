@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace MRI_Vision.UI.Utils;
+namespace MRI_Vision.Domain.Picture.ColorStrategy;
 
 internal class AnomalyColorStrategy(Color? shift = null) : IColorStrategy
 {
@@ -10,8 +10,8 @@ internal class AnomalyColorStrategy(Color? shift = null) : IColorStrategy
     {
         return Color.FromArgb(
             grayScale,
-            grayScale * (Shift.R / 255),
-            grayScale * (Shift.G / 255),
-            grayScale * (Shift.B / 255));
+            (int)(grayScale * (Shift.R / 255.0)),
+            (int)(grayScale * (Shift.G / 255.0)),
+            (int)(grayScale * (Shift.B / 255.0)));
     }
 }
