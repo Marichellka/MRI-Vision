@@ -13,32 +13,32 @@ import sys, os
 script_dir = os.path.dirname(__file__)
 sys.path.append(os.path.join(script_dir, '../'))
 
-from utils.load_config import load_config
+from utils.load_config import Config
 
-config = load_config()
+class ImageHelper:
+    config = Config.load_config()
+    
+    @staticmethod
+    def load_image(path: str) -> list:
+        loadImage = Compose([
+            LoadImage(image_only=True), 
+            AddChannel(),
+            Orientation(axcodes=ImageHelper.config['orientation']),
+            Resize(spatial_size=ImageHelper.config['size']),
+        ])
+        [image] = loadImage(path).array
+        return image.tolist()
 
-def load_image(path: str):
-    print(config)
-    loadImage = Compose([
-        LoadImage(image_only=True), 
-        AddChannel(),
-        Orientation(axcodes=config['orientation']),
-        Resize(spatial_size=config['size']),
-    ])
-    [image] = loadImage(path).array
-    return image.tolist()
+    @staticmethod
+    def preprocess_image(path: str):
+        preprocessImage = Compose([
+            LoadImage(image_only=True),
+            AddChannel(),
+            Orientation(axcodes=ImageHelper.config['orientation']),
+            Resize(spatial_size=ImageHelper.config['size']), 
+            ScaleIntensity(),
+            EnsureType(),
+            AddChannel(),
+        ])
 
-
-def preprocess_image(path: str):
-    preprocessImage = Compose([
-        LoadImage(image_only=True),
-        AddChannel(),
-        Orientation(axcodes=config['orientation']),
-        Resize(spatial_size=config['size']), 
-        ScaleIntensity(),
-        EnsureType(),
-        AddChannel(),
-    ])
-
-    return preprocessImage(path)
-
+        return preprocessImage(path)

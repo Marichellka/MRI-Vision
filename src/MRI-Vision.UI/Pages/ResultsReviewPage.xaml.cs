@@ -94,7 +94,7 @@ namespace MRI_Vision.UI.Pages
             SetSlice(sliceIndex);
         }
 
-        private void PictureOrientationComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OrientationSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_pictures is null) return;
 

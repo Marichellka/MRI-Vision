@@ -57,7 +57,7 @@ namespace MRI_Vision.UI.Pages
             ImageBehavior.SetAnimatedSource(image, imageSource);
         }
 
-        private void SetScrollBar(int sliceInd) // TODO: rename
+        private void SetScrollBar(int sliceInd)
         {
             ImageScrollBar.Maximum = _pictures[_currentOrientation].Length - 1;
             ImageScrollBar.Value = sliceInd;
@@ -71,7 +71,7 @@ namespace MRI_Vision.UI.Pages
             SetSlice(sliceIndex);
         }
 
-        private void PictureOrientationComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void OrientationSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_pictures is null) return;
 

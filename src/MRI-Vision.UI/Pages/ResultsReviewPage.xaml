@@ -60,7 +60,7 @@
             <ComboBox Name="PictureOrientationComboBox"
                       Text="Picture Orientation"
                       ItemsSource="{StaticResource orientations}"
-                      SelectionChanged="PictureOrientationComboBoxSelectionChanged"
+                      SelectionChanged="OrientationSelectionChanged"
                       Grid.Row="0" FontSize="12"
                       Foreground="WhiteSmoke"
                       FontFamily="Yu Gothic Medium"

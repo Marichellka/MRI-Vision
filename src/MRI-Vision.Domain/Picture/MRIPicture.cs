@@ -61,7 +61,7 @@ namespace MRI_Vision.Domain.Picture
 
                 dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 
-                return (float[][][])loader.load_image(path);
+                return (float[][][])loader.ImageHelper.load_image(path);
             }
         }
 

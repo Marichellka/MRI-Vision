@@ -35,13 +35,13 @@ class AutoEncoder:
 
         return epoch, model['best_loss']
     
-    def load(self, path: str):
+    def load(self, path: str) -> None:
         model = torch.load(path, map_location=self.device)
         
         self.encoder.load_state_dict(model['encoder'])
         self.decoder.load_state_dict(model['decoder'])
     
-    def save(self, path: str, epoch: int, best_loss: float):
+    def save(self, path: str, epoch: int, best_loss: float) -> None:
         torch.save({
             'epoch': epoch,
             'best_loss': best_loss,
@@ -51,7 +51,7 @@ class AutoEncoder:
             'loss': self.loss.state_dict()
         }, path)
 
-    def save(self, path: str):
+    def save(self, path: str) -> None:
         torch.save({
             'encoder': self.encoder.state_dict(),
             'decoder': self.decoder.state_dict(),

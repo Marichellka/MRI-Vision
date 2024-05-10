@@ -31,7 +31,7 @@ public class Model
 
             dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 
-            _model = loader.load_model(path);
+            _model = loader.ModelHelper.load_model(path);
         }
     }
 
@@ -47,7 +47,7 @@ public class Model
 
             dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 
-            var tmp = loader.analyze_image(path, _model);
+            var tmp = loader.ModelHelper.analyze_image(path, _model);
 
             var picture = (float[][][])tmp[0];
             var restored = (float[][][])tmp[1];
