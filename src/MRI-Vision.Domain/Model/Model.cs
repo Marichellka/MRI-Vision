@@ -6,6 +6,9 @@ using Python.Runtime;
 
 namespace MRI_Vision.Domain.Model;
 
+/// <summary>
+/// Class to load and use model
+/// </summary>
 public class Model
 {
     private const string _modelModulePath = @".\utils\model_helper.py";
@@ -13,6 +16,10 @@ public class Model
 
     private Model() { }
 
+    /// <summary>
+    /// Create Model instance async
+    /// </summary>
+    /// <param name="path"></param>
     public static async Task<Model> CreateAsync(string path = @".\Model\model.pth")
     {
         Model model = new();
@@ -20,6 +27,10 @@ public class Model
         return model;
     }
 
+    /// <summary>
+    /// Load saved model asynchronously
+    /// </summary>
+    /// <param name="path"></param>
     private async Task LoadModelAsync(string path)
     {
         await PythonHelper.MoveTo();
@@ -36,6 +47,13 @@ public class Model
         }
     }
 
+    /// <summary>
+    /// Analyzes image using its path and this model asynchronously
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>
+    /// Loaded from path <see cref="MRIPicture"/> and calculated <see cref="AnomalyPicture"/>
+    /// </returns>
     public async Task<(MRIPicture, AnomalyPicture)> AnalyzeImageAsync(string path)
     {
         await PythonHelper.MoveTo();

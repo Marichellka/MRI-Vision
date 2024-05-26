@@ -2,6 +2,10 @@
 
 namespace MRI_Vision.Domain.Picture.ColorStrategy;
 
+/// <summary>
+/// <inheritdoc cref="IColorStrategy"/>.
+/// Color strategy for <see cref="AnomalyPicture"/>
+/// </summary>
 internal class AnomalyColorStrategy(Color? shift = null) : IColorStrategy
 {
     public Color Shift { get; } = shift ?? Color.DarkRed;

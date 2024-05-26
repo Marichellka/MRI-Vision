@@ -5,6 +5,9 @@ using System.Drawing;
 
 namespace MRI_Vision.Domain.Picture
 {
+    /// <summary>
+    /// Orientation of <see cref="MRIPicture"/>
+    /// </summary>
     public enum MRIPictureOrientation
     {
         Front,
@@ -12,22 +15,57 @@ namespace MRI_Vision.Domain.Picture
         Top,
     }
 
+    /// <summary>
+    /// Contains all information and methods to present MRI picture.
+    /// </summary>
     public class MRIPicture
     {
+        /// <summary>
+        /// Number of slices in picture
+        /// </summary>
         public int Length => _imageData.Length;
+        /// <summary>
+        /// Orientation of picture
+        /// </summary>
         public MRIPictureOrientation Orientation => _orientation;
+
+        /// <summary>
+        /// Image raw data
+        /// </summary>
         protected float[][][] _imageData;
+        /// <summary>
+        /// max value in raw data
+        /// </summary>
         protected float _max;
+        /// <summary>
+        /// Size (x, y, z) of 3D image data
+        /// </summary>
         protected int[] _size;
+        /// <summary>
+        /// Array of <see cref="Bitmap"/> image slices
+        /// </summary>
         protected Bitmap[] _bitmapSlices;
+        /// <summary>
+        /// Color strategy for image
+        /// </summary>
         protected IColorStrategy _colorStrategy;
+        /// <summary>
+        /// Picture orientation
+        /// </summary>
         protected MRIPictureOrientation _orientation;
+
         private const string _modelModulePath = @".\utils\image_helper.py";
 
+        /// <summary>
+        /// Create instance from reading file
+        /// </summary>
         public MRIPicture(string path)
             : this(ReadImageAsync(path).Result)
         { }
 
+        /// <summary>
+        /// Create instance using given picture data
+        /// </summary>
         public MRIPicture(float[][][] data, IColorStrategy? colorStrategy = null)
             : this(data,
                   [data.Length, data[0].Length, data[0][0].Length],
@@ -35,6 +73,9 @@ namespace MRI_Vision.Domain.Picture
                   MRIPictureOrientation.Side, colorStrategy)
         { }
 
+        /// <summary>
+        /// Main constructor
+        /// </summary>
         protected MRIPicture(
             float[][][] data,
             int[] size,
@@ -50,6 +91,9 @@ namespace MRI_Vision.Domain.Picture
             _bitmapSlices = BitmapUtilities.GetBitmapSlices(data, size, max, _colorStrategy);
         }
 
+        /// <summary>
+        /// Read picture data from file asynchronously
+        /// </summary>
         private static async Task<float[][][]> ReadImageAsync(string path)
         {
             await PythonHelper.MoveTo();
@@ -66,6 +110,9 @@ namespace MRI_Vision.Domain.Picture
             }
         }
 
+        /// <summary>
+        /// Create new picture with given <see cref="MRIPictureOrientation"/>
+        /// </summary>
         public virtual MRIPicture RotatePicture(MRIPictureOrientation newOrientation)
         {
             if (_orientation == newOrientation) return this;
@@ -75,6 +122,9 @@ namespace MRI_Vision.Domain.Picture
             return new MRIPicture(newData, newSize, _max, newOrientation);
         }
 
+        /// <summary>
+        /// Rotate image data using given <see cref="MRIPictureOrientation"/>
+        /// </summary>
         protected (float[][][], int[]) RotateImageData(MRIPictureOrientation newOrientation)
         {
             int rotation = _orientation - newOrientation;
@@ -99,6 +149,9 @@ namespace MRI_Vision.Domain.Picture
             return (newData, newSize);
         }
 
+        /// <summary>
+        /// Rotate 1D array by given rotation
+        /// </summary>
         private int[] RotateArray(int[] array, int rotation)
         {
             int[] newArray = new int[array.Length];
