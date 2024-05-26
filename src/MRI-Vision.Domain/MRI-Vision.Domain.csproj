@@ -12,12 +12,4 @@
   <ItemGroup>
     <ProjectReference Include="..\MRI-Vision.Python\MRI-Vision.Python.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="Model\model.pth">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <InternalsVisibleTo Include="MRI-Vision.Domain.Tests" />
-  </ItemGroup>
 </Project>

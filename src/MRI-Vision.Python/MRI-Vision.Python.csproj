@@ -12,6 +12,9 @@
   </ItemGroup>
 
 	<ItemGroup>
+	  <None Update="model\model.pth">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	  <None Update="utils\image_helper.py">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
