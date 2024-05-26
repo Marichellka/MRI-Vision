@@ -1,6 +1,7 @@
 from glob import glob
 
 import torch
+from torch import Tensor
 from torch.utils.tensorboard import SummaryWriter
 from monai.data import CacheDataset, DataLoader
 from monai.transforms import (
@@ -60,36 +61,16 @@ class TrainHelper:
 
 
     def train(self, model: AutoEncoder, epochs : int, epoch: int = 0, best_loss: int = 100) -> AutoEncoder:
-        '''Train AutoEncoder for {epochs} starting from {epoch} with {best_loss}'''
+        '''Train AutoEncoder for {epochs} starting from {epoch} with {best_loss}
+
+        Returns:
+            model: AutoEncoder
+                Trained model
+        '''
         with SummaryWriter(TENSOR_BOARD_PATH) as writer:
-            step = 0
             for epoch in range(epoch, epochs):
                 logging.info(f"epoch = {epoch}")
-
-                model.encoder.train()
-                model.decoder.train()
-
-                # Epoch
-                epoch_loss = 0
-                for data in self.train_loader:
-                    input = data.to(model.device)
-                    encoded = model.encoder(input)
-                    restored = model.decoder(encoded)
-
-                    step_loss = model.loss(restored, input)
-                    model.opimizer.zero_grad()
-                    step_loss.backward()
-                    model.opimizer.step()
-
-                    epoch_loss += step_loss.item()
-
-                    writer.add_scalar('step_loss', step_loss, step)
-                    logging.info(f"Step loss: {step_loss.item()}")
-                    step+=1
-
-                epoch_loss = epoch_loss/len(self.train_loader)
-
-                logging.info(f"epoch loss: {epoch_loss}")
+                epoch_loss = self.epoch(model, writer) # Run epoch
                 writer.add_scalar("epoch_loss", epoch_loss, epoch)
 
                 loss = self.evaluate_loss() # evaluate model
@@ -102,9 +83,42 @@ class TrainHelper:
         
         return model
     
+    def epoch(self, model: AutoEncoder, writer: SummaryWriter) -> float:
+        '''Perform one epoch fo training'''
+        step = 0
+        model.encoder.train()
+        model.decoder.train()
+
+        epoch_loss = 0
+        for data in self.train_loader:
+            step_loss = self.step(model, data)
+            epoch_loss += step_loss.item()
+            writer.add_scalar('step_loss', step_loss, step)
+            logging.info(f"Step {step} loss: {step_loss.item()}")
+            step+=1
+
+        epoch_loss = epoch_loss/len(self.train_loader)
+
+        logging.info(f"epoch loss: {epoch_loss}")
+        return epoch_loss
+
+    
+    def step(self, model: AutoEncoder, data: Tensor) -> Tensor:
+        '''Perform one step of training'''
+        input = data.to(model.device)
+        encoded = model.encoder(input)
+        restored = model.decoder(encoded)
+
+        step_loss = model.loss(restored, input)
+        step_loss.backward()
+        model.opimizer.zero_grad()
+        model.opimizer.step()
+
+        return step_loss
+
 
     def evaluate_loss(self, model: AutoEncoder) -> float:
-        '''Evaluate epoch loss'''
+        '''Evaluate loss of model on validation data'''
         model.encoder.eval()
         model.decoder.eval()
 
