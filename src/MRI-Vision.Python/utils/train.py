@@ -25,8 +25,10 @@ TENSOR_BOARD_PATH = './content/tensor_board'
 logging.basicConfig(level=20)
 
 class TrainHelper:
+    '''Helper class to train AutoEncoder'''
+
     def __init__(self, data_dir: str):
-    
+        # Load data
         data_files = glob(data_dir+'*.nii.gz')
         random.shuffle(data_files)
 
@@ -41,6 +43,7 @@ class TrainHelper:
         batch_size = 4
         workers = 12
 
+        # Preprocess data
         pre_process = Compose([
             LoadImage(image_only=True),
             AddChannel(),
@@ -57,6 +60,7 @@ class TrainHelper:
 
 
     def train(self, model: AutoEncoder, epochs : int, epoch: int = 0, best_loss: int = 100) -> AutoEncoder:
+        '''Train AutoEncoder for {epochs} starting from {epoch} with {best_loss}'''
         with SummaryWriter(TENSOR_BOARD_PATH) as writer:
             step = 0
             for epoch in range(epoch, epochs):
@@ -65,6 +69,7 @@ class TrainHelper:
                 model.encoder.train()
                 model.decoder.train()
 
+                # Epoch
                 epoch_loss = 0
                 for data in self.train_loader:
                     input = data.to(model.device)
@@ -87,18 +92,19 @@ class TrainHelper:
                 logging.info(f"epoch loss: {epoch_loss}")
                 writer.add_scalar("epoch_loss", epoch_loss, epoch)
 
-                loss = self.evaluate_loss()
+                loss = self.evaluate_loss() # evaluate model
                 if  loss < best_loss:
                     best_loss = loss
                     logging.info(f"New best lost: {best_loss}")
-                    model.save(SAVED_MODEL_PATH+"best_model.pth")
+                    model.save(SAVED_MODEL_PATH+"best_model.pth") # save best model
 
-                model.save(SAVED_MODEL_PATH+"model.pth", epoch, best_loss)
+                model.save(SAVED_MODEL_PATH+"model.pth", epoch, best_loss) # save last model
         
         return model
     
 
     def evaluate_loss(self, model: AutoEncoder) -> float:
+        '''Evaluate epoch loss'''
         model.encoder.eval()
         model.decoder.eval()
 

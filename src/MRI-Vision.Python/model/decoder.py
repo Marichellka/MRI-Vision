@@ -1,4 +1,5 @@
 import torch.nn as nn
+from torch import Tensor
 import math
 
 import logging
@@ -16,11 +17,12 @@ class DeConvBlock(nn.Module):
         logging.info(f"Added convolution block to decoder (channels: {in_channels}->{out_channels})")
 
     
-    def forward(self, input):
+    def forward(self, input: Tensor) -> Tensor:
         return self.conv_block(input)
 
 
 class DeResBlock(nn.Module):
+    '''Residual block of 2 convolutional layers and skip connection used to upsample data'''
     def __init__(self, in_channels: int, out_channels: int, kernel: int = 3, stride: int = 2):
         super(DeResBlock, self).__init__()
 
@@ -41,11 +43,14 @@ class DeResBlock(nn.Module):
         logging.info(f"Added residual block to decoder (channels: {in_channels}->{out_channels})")
     
 
-    def forward(self, input):
+    def forward(self, input: Tensor)-> Tensor:
+        '''Upsample data'''
         return self.skip(input) + self.conv_block(input)
 
 
 class Decoder(nn.Module):
+    '''Used to decode MRI picture using DeResBlocks'''
+
     def __init__(self, in_size: tuple[int, int, int], 
                  channels: int = 16, blocks: int = 4):
         super(Decoder, self).__init__()
@@ -66,7 +71,8 @@ class Decoder(nn.Module):
         self.dense_out = nn.Linear(self.in_channels*2, self.flat_size)
 
 
-    def forward(self, z):
+    def forward(self, z: Tensor) -> Tensor:
+        '''Reconstruct image from latent space'''
         z = self.dense_out(z)
         unflatten = z.view(-1, self.in_channels, self.in_h, self.in_w, self.in_d)
         decoded = self.decode(unflatten)

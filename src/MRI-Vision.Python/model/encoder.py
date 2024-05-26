@@ -1,4 +1,5 @@
 import torch.nn as nn
+from torch import Tensor
 import math
 
 import logging
@@ -17,11 +18,12 @@ class EnConvBlock(nn.Module):
         logging.info(f"Added convolution block to encoder (channels: {in_channels}->{out_channels})")
 
     
-    def forward(self, input):
+    def forward(self, input: Tensor) -> Tensor:
         return self.conv_block(input)
 
 
 class EnResBlock(nn.Module):
+    '''Residual block of 2 convolutional layers and skip connection used to downsample data'''
     def __init__(self, in_channels: int, out_channels: int, kernel: int = 3, stride: int = 2):
         super(EnResBlock, self).__init__()
 
@@ -42,11 +44,14 @@ class EnResBlock(nn.Module):
         logging.info(f"Added residual block to encoder (channels: {in_channels}->{out_channels})")
     
 
-    def forward(self, input):
+    def forward(self, input: Tensor) -> Tensor:
+        '''Downsample data'''
         return self.skip(input) + self.conv_block(input)
 
 
 class Encoder(nn.Module):
+    '''Used to encode MRI picture using EnResBlocks'''
+
     def __init__(self, in_size: tuple[int, int, int], 
                  channels: int = 16, blocks: int = 4):
         super(Encoder, self).__init__()
@@ -69,7 +74,8 @@ class Encoder(nn.Module):
         self.dense = nn.Linear(self.flat_size, channels*(2**blocks)*2)
 
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
+        '''Encode picture data into 1D latent space'''
         x = self.input_conv(x)
         encoded = self.encode(x)
         flatten = encoded.view(-1, self.flat_size)

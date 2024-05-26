@@ -9,17 +9,21 @@ from utils.load_config import Config
 from utils.image_helper import ImageHelper
 
 class ModelHelper:
+    '''Helper class to use AutoEncoder'''
+
     @staticmethod
     def load_model(path: str) -> AutoEncoder:
+        '''Load AutoEncoder from a file'''
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         config = Config.load_config()
-        model = AutoEncoder(tuple(config['size']), device, blocks=5)
+        model = AutoEncoder(tuple(config['size']), device, blocks=config['blocks'])
         model.load(path)
 
         return model
     
     @staticmethod
-    def analyze_image(path: str, model: AutoEncoder) -> tuple:
+    def analyze_image(path: str, model: AutoEncoder) -> tuple[list, list]:
+        '''Load and analyze image using AutoEncoder'''
         image = ImageHelper.preprocess_image(path)
         with torch.no_grad():
             input = image.to(model.device)
