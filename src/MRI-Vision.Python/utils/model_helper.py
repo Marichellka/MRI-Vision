@@ -6,7 +6,7 @@ sys.path.append(os.path.join(script_dir, '../'))
 
 from model.autoencoder import AutoEncoder
 from utils.load_config import Config 
-from utils.image_helper import preprocess_image
+from utils.image_helper import ImageHelper
 
 class ModelHelper:
     @staticmethod
@@ -20,7 +20,7 @@ class ModelHelper:
     
     @staticmethod
     def analyze_image(path: str, model: AutoEncoder) -> tuple:
-        image = preprocess_image(path)
+        image = ImageHelper.preprocess_image(path)
         with torch.no_grad():
             input = image.to(model.device)
             encoded = model.encoder(input)
