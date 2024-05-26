@@ -119,8 +119,8 @@ namespace MRI_Vision.UI.Pages
     {
         public PictureOrientation()
         {
-            Add(MRIPictureOrientation.Front);
             Add(MRIPictureOrientation.Side);
+            Add(MRIPictureOrientation.Front);
             Add(MRIPictureOrientation.Top);
         }
     }

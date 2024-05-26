@@ -7,9 +7,9 @@ namespace MRI_Vision.Domain.Picture
 {
     public enum MRIPictureOrientation
     {
-        Side,
         Front,
-        Top
+        Side,
+        Top,
     }
 
     public class MRIPicture
@@ -58,6 +58,7 @@ namespace MRI_Vision.Domain.Picture
             {
                 dynamic os = Py.Import("os");
                 dynamic sys = Py.Import("sys");
+                sys.path.append(os.path.dirname(_modelModulePath));
 
                 dynamic loader = Py.Import(Path.GetFileNameWithoutExtension(_modelModulePath));
 
