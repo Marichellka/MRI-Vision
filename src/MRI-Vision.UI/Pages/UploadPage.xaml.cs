@@ -4,13 +4,23 @@ using Microsoft.Win32;
 
 namespace MRI_Vision.UI.Pages;
 
+/// <summary>
+/// <inheritdoc cref="Page"/>
+/// Interaction logic for UploadPage.xaml
+/// </summary>
 public partial class UploadPage : Page
 {
+    /// <summary>
+    /// Initialize page
+    /// </summary>
     public UploadPage()
     {
         InitializeComponent();
     }
 
+    /// <summary>
+    /// Open file explorer to choose file on Button click
+    /// </summary>
     private void OpenExplorerButton_Click(object sender, RoutedEventArgs routedEventArgs)
     {
         OpenFileDialog fileDialog= new OpenFileDialog(); 
@@ -23,6 +33,9 @@ public partial class UploadPage : Page
         }
     }
     
+    /// <summary>
+    /// Proccess event on file dropped in drop box
+    /// </summary>
     private void DropBox_Drop(object sender, DragEventArgs e)
     {
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -51,6 +64,9 @@ public partial class UploadPage : Page
         }
     }
 
+    /// <summary>
+    /// Choose and navigate to next page
+    /// </summary>
     private void NavigateToNextPage(string filePath)
     {
         var messageBoxResult = MessageBox.Show(

@@ -5,8 +5,6 @@ using System.Drawing;
 using WpfAnimatedGif;
 using System.IO;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
-using System.Windows.Forms;
 using Microsoft.Win32;
 using ScottPlot.Plottables;
 using MRI_Vision.Domain.Picture;
@@ -15,6 +13,7 @@ using MRI_Vision.Domain.Model;
 namespace MRI_Vision.UI.Pages
 {
     /// <summary>
+    /// <inheritdoc cref="Page"/>
     /// Interaction logic for ResultsReviewPage.xaml
     /// </summary>
     public partial class ResultsReviewPage : Page
@@ -24,6 +23,9 @@ namespace MRI_Vision.UI.Pages
         private ImageSource _loadingImageSource;
         private Scatter _plot;
 
+        /// <summary>
+        /// Initialize results review page
+        /// </summary>
         public ResultsReviewPage(string filePath)
         {
             InitializeComponent();
@@ -46,6 +48,9 @@ namespace MRI_Vision.UI.Pages
             PlotImage.Refresh();
         }
 
+        /// <summary>
+        /// Analyze <see cref="MRIPicture"/> asynchronously and visualize
+        /// </summary>
         private async void AnalyzeImageAsync(string filePath)
         {
             var model = await ModelHelper.GetModelAsync();
@@ -62,12 +67,18 @@ namespace MRI_Vision.UI.Pages
             LoadingImage.Visibility = Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Set <see cref="Bitmap"/> slice of <see cref="MRIPicture"/>
+        /// </summary>
         protected void SetSlice(int index)
         {
             SetImage(_pictures[_currentOrientation].Item1[index], UploadedImage);
             SetImage(_pictures[_currentOrientation].Item2[index], AnomalyImage);
         }
 
+        /// <summary>
+        /// Set <see cref="Bitmap"/> image to <see cref="Image"/>
+        /// </summary>
         private void SetImage(Bitmap slice, System.Windows.Controls.Image image)
         {
             MemoryStream memory = new MemoryStream();
@@ -81,12 +92,18 @@ namespace MRI_Vision.UI.Pages
             ImageBehavior.SetAnimatedSource(image, imageSource);
         }
 
+        /// <summary>
+        /// Set scroll bar to the <see cref="MRIPicture"/> slice index
+        /// </summary>
         private void SetScrollBar(int sliceInd) 
         {
             ImageScrollBar.Maximum = _pictures[_currentOrientation].Item1.Length - 1;
             ImageScrollBar.Value = sliceInd;
         }
 
+        /// <summary>
+        /// Process event on bar scroll
+        /// </summary>
         private void OnScroll(object sender, RoutedEventArgs e)
         {
             if(_pictures is null) return;
@@ -95,6 +112,9 @@ namespace MRI_Vision.UI.Pages
             SetSlice(sliceIndex);
         }
 
+        /// <summary>
+        /// Change orientation of <see cref="MRIPicture"/>
+        /// </summary>
         private void OrientationSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_pictures is null) return;
@@ -121,6 +141,9 @@ namespace MRI_Vision.UI.Pages
             }
         }
 
+        /// <summary>
+        /// Rotate <see cref="MRIPicture"/> asynchronously
+        /// </summary>
         private async void RotatePictureAsync(MRIPictureOrientation orientation)
         {
             LoadingImage.Visibility = Visibility.Visible;
@@ -138,6 +161,9 @@ namespace MRI_Vision.UI.Pages
             LoadingImage.Visibility = Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Change anomaly map visibility
+        /// </summary>
         private void AnomalyMaskCheckBoxClick(object sender, RoutedEventArgs e)
         {
             if(AnomalyMaskCheckBox.IsChecked == false)
@@ -150,6 +176,9 @@ namespace MRI_Vision.UI.Pages
             }
         }
 
+        /// <summary>
+        /// Naviaget to General view
+        /// </summary>
         private void GeneralViewButtonClick(object sender, RoutedEventArgs e)
         {
             PlotImage.Visibility = Visibility.Visible;
@@ -159,6 +188,9 @@ namespace MRI_Vision.UI.Pages
             AnomalyMaskCheckBox.Visibility = Visibility.Hidden;
         }
 
+        /// <summary>
+        /// Navigate to Details view
+        /// </summary>
         private void DetailsButtonClick(object sender, RoutedEventArgs e)
         {
             PlotImage.Visibility = Visibility.Hidden;
@@ -168,11 +200,18 @@ namespace MRI_Vision.UI.Pages
             AnomalyMaskCheckBox.Visibility = Visibility.Visible;
         }
 
+
+        /// <summary>
+        /// Navigate to <see cref="UploadPage"/>
+        /// </summary>
         private void ReuploadButtonClick(object sender, RoutedEventArgs e)
         {
             NavigationService!.Navigate(new UploadPage());
         }
 
+        /// <summary>
+        /// Create PNG and download results
+        /// </summary>
         private void DownloadButtonClick(object sender, RoutedEventArgs e)
         {
 
@@ -227,6 +266,9 @@ namespace MRI_Vision.UI.Pages
             }
         }
 
+        /// <summary>
+        /// Naviaget to <see cref="MRIPicture"/> slice based on clicked Plot point
+        /// </summary>
         private void PlotMouseDoubleClick(object sender, System.Windows.Input.MouseEventArgs e)
         {   
             var mouse = PlotImage.GetCurrentPlotPixelPosition();

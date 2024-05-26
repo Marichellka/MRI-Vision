@@ -11,6 +11,7 @@ using MRI_Vision.Domain.Picture;
 namespace MRI_Vision.UI.Pages
 {
     /// <summary>
+    /// <inheritdoc cref="Page"/>
     /// Interaction logic for ImageReviewPage.xaml
     /// </summary>
     public partial class ImageReviewPage : Page
@@ -20,18 +21,24 @@ namespace MRI_Vision.UI.Pages
         private string _filePath;
         private ImageSource _loadingImageSource;
 
+        /// <summary>
+        /// Initialize <see cref="MRIPicture"/> review page
+        /// </summary>
         public ImageReviewPage(string filePath)
         {
             InitializeComponent();
             _loadingImageSource = ImageBehavior.GetAnimatedSource(UploadedImage);
             _filePath = filePath;
+            _pictures = new();
             LoadImageAsync();
         }
 
+        /// <summary>
+        /// Load <see cref="MRIPicture"/> asynchronously and visualize in page
+        /// </summary>
         private async void LoadImageAsync()
         {
             var MRIPicture = await Task.Run(() => new MRIPicture(_filePath));
-            _pictures = new();
             _pictures.Add(MRIPicture.Orientation, MRIPicture);
             _currentOrientation = MRIPicture.Orientation;
             SetScrollBar(0);
@@ -39,11 +46,17 @@ namespace MRI_Vision.UI.Pages
             PictureOrientationComboBox.SelectedItem = _currentOrientation;
         }
 
+        /// <summary>
+        /// Set <see cref="Bitmap"/> slice of <see cref="MRIPicture"/>
+        /// </summary>
         protected void SetSlice(int index)
         {
             SetImage(_pictures[_currentOrientation][index], UploadedImage);
         }
 
+        /// <summary>
+        /// Set <see cref="Bitmap"/> image to <see cref="Image"/>
+        /// </summary>
         private void SetImage(Bitmap slice, System.Windows.Controls.Image image)
         {
             MemoryStream memory = new MemoryStream();
@@ -57,12 +70,18 @@ namespace MRI_Vision.UI.Pages
             ImageBehavior.SetAnimatedSource(image, imageSource);
         }
 
+        /// <summary>
+        /// Set scroll bar to the <see cref="MRIPicture"/> slice index
+        /// </summary>
         private void SetScrollBar(int sliceInd)
         {
             ImageScrollBar.Maximum = _pictures[_currentOrientation].Length - 1;
             ImageScrollBar.Value = sliceInd;
         }
 
+        /// <summary>
+        /// Process event on bar scroll
+        /// </summary>
         private void OnScroll(object sender, RoutedEventArgs e)
         {
             if(_pictures is null) return;
@@ -71,6 +90,9 @@ namespace MRI_Vision.UI.Pages
             SetSlice(sliceIndex);
         }
 
+        /// <summary>
+        /// Change <see cref="MRIPicture"/> orientation
+        /// </summary>
         private void OrientationSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_pictures is null) return;
@@ -93,6 +115,9 @@ namespace MRI_Vision.UI.Pages
             }
         }
 
+        /// <summary>
+        /// Rotate <see cref="MRIPicture"/> asynchronously
+        /// </summary>
         private async void RotatePictureAsync(MRIPictureOrientation orientation)
         {
             var newImage = await Task.Run(() => _pictures[_currentOrientation].RotatePicture(orientation));
@@ -104,17 +129,26 @@ namespace MRI_Vision.UI.Pages
             SetSlice(newInd);
         }
 
+        /// <summary>
+        /// Naviagate to <see cref="ResultsReviewPage"/>
+        /// </summary>
         private void AnalyzeButtonClick(object sender, RoutedEventArgs e)
         {
             NavigationService!.Navigate(new ResultsReviewPage(_filePath));
         }
 
+        /// <summary>
+        /// Navigate to <see cref="UploadPage"/>
+        /// </summary>
         private void ReuploadButtonClick(object sender, RoutedEventArgs e)
         {
             NavigationService!.Navigate(new UploadPage());
         }
     }
 
+    /// <summary>
+    /// <inheritdoc cref="ObservableCollection{T}"/>
+    /// </summary>
     class PictureOrientation: ObservableCollection<MRIPictureOrientation>
     {
         public PictureOrientation()
