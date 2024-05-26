@@ -22,6 +22,7 @@ namespace MRI_Vision.UI.Pages
         private Dictionary<MRIPictureOrientation, (MRIPicture, AnomalyPicture)> _pictures;
         private MRIPictureOrientation _currentOrientation;
         private ImageSource _loadingImageSource;
+        private Scatter _plot;
 
         public ResultsReviewPage(string filePath)
         {
@@ -36,8 +37,8 @@ namespace MRI_Vision.UI.Pages
 
             float[] ys = _pictures[_currentOrientation].Item2.AnomalyIndexes;
             int[] xs = Enumerable.Range(0, ys.Length).ToArray();
-            var plot = PlotImage.Plot.Add.Scatter(xs, ys);
-            plot.Color = ScottPlot.Color.FromHex("#961b1b");
+            _plot = PlotImage.Plot.Add.Scatter(xs, ys);
+            _plot.Color = ScottPlot.Color.FromHex("#961b1b");
 
             PlotImage.Plot.Add.HorizontalLine(0.01, color: ScottPlot.Color.FromHex("#5aa840"));
             PlotImage.Plot.Axes.AutoScale();
@@ -105,7 +106,9 @@ namespace MRI_Vision.UI.Pages
             if (_pictures.ContainsKey(orientation))
             {
                 _currentOrientation = orientation;
-                int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Item1.Length - 1);
+                int newInd = Math.Clamp(
+                    (int)(ImageScrollBar.Value/ImageScrollBar.Maximum*_pictures[_currentOrientation].Item1.Length), 
+                    0, _pictures[_currentOrientation].Item1.Length - 1);
                 SetScrollBar(newInd);
                 SetSlice(newInd);
                 GetPlot();
@@ -126,7 +129,9 @@ namespace MRI_Vision.UI.Pages
             _pictures.Add(orientation, (newImage, newAnomalyImage));
             _currentOrientation = orientation;
 
-            int newInd = Math.Clamp((int)ImageScrollBar.Value, 0, _pictures[_currentOrientation].Item1.Length - 1);
+            int newInd = Math.Clamp(
+                    (int)(ImageScrollBar.Value / ImageScrollBar.Maximum * _pictures[_currentOrientation].Item1.Length),
+                    0, _pictures[_currentOrientation].Item1.Length - 1);
             SetScrollBar(newInd);
             SetSlice(newInd);
             GetPlot();
@@ -220,6 +225,20 @@ namespace MRI_Vision.UI.Pages
                     }
                 }
             }
+        }
+
+        private void PlotMouseDoubleClick(object sender, System.Windows.Input.MouseEventArgs e)
+        {   
+            var mouse = PlotImage.GetCurrentPlotPixelPosition();
+            var mouseCoordinates = PlotImage.Plot.GetCoordinates(mouse);
+            var nearest = _plot.Data.GetNearest(mouseCoordinates, PlotImage.Plot.LastRender);
+            if (nearest.X.Equals(double.NaN))
+                return;
+            int sliceInd = (int)nearest.X;
+            
+            DetailsButtonClick(new(), new());
+            SetSlice(sliceInd);
+            SetScrollBar(sliceInd);
         }
     }
 }

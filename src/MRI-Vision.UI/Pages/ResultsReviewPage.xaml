@@ -35,7 +35,8 @@
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center"
                        Name="AnomalyImage" Opacity="0.5"/>
                 <ScottPlot:WpfPlot HorizontalAlignment="Center" Background="Transparent"
-                                   Name="PlotImage" MinHeight="300" MinWidth="300"/>
+                                   Name="PlotImage" MinHeight="300" MinWidth="300"
+                                   MouseDoubleClick="PlotMouseDoubleClick"/>
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
                        Name="LoadingImage"
                        gif:ImageBehavior.AnimatedSource="/Images/loading.gif"/>
