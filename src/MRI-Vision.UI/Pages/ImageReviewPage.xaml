@@ -28,7 +28,8 @@
                 <DropShadowEffect BlurRadius="50" Color="Gray" ShadowDepth="10" />
             </Border.Effect>
             <DockPanel Background="Black" Margin="5"
-                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                       MouseWheel="DockPanel_MouseWheel">
                 <Image Name="UploadedImage" VerticalAlignment="Center" 
                        gif:ImageBehavior.AnimatedSource="/Images/loading.gif"/>
             </DockPanel>

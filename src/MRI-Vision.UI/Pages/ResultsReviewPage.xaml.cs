@@ -113,6 +113,18 @@ namespace MRI_Vision.UI.Pages
         }
 
         /// <summary>
+        /// Process event on mouse scroll
+        /// </summary>
+        private void Grid_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            int ind = (int)ImageScrollBar.Value;
+            ind = e.Delta < 0 ? ind - 1 : ind + 1;
+            ind = Math.Clamp(0, ind, (int)ImageScrollBar.Maximum);
+            SetSlice(ind);
+            SetScrollBar(ind);
+        }
+
+        /// <summary>
         /// Change orientation of <see cref="MRIPicture"/>
         /// </summary>
         private void OrientationSelectionChanged(object sender, SelectionChangedEventArgs e)

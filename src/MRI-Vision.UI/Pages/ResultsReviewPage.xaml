@@ -29,7 +29,7 @@
                 <DropShadowEffect BlurRadius="50" Color="Gray" ShadowDepth="10" />
             </Border.Effect>
             <Grid Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" 
-                  Margin="5" Background="Black">
+                  Margin="5" Background="Black" MouseWheel="Grid_MouseWheel">
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center" 
                        Name="UploadedImage"/>
                 <Image HorizontalAlignment="Center" VerticalAlignment="Center"
